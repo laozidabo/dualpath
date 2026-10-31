@@ -1,0 +1,325 @@
+{
+  "id": "I006",
+  "initial": "```python\ndef token_bucket(capacity, refill, events):\n    def is_int(x):\n        return isinstance(x, int) and not isinstance(x, bool)\n\n    if not is_int(capacity) or capacity < 0:\n        raise ValueError(\"capacity must be a non-negative integer\")\n    if not is_int(refill) or refill < 0:\n        raise ValueError(\"refill must be a non-negative integer\")\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n\n    parsed = []\n    for ev in events:\n        if not isinstance(ev, tuple) or len(ev) != 2:\n            raise ValueError(\"each event must be a length-2 tuple\")\n        ts, cost = ev\n        if not is_int(ts) or ts < 0:\n            raise ValueError(\"timestamp must be a non-negative integer\")\n        if not is_int(cost) or cost < 0:\n            raise ValueError(\"cost must be a non-negative integer\")\n        parsed.append((ts, cost))\n\n    for i in range(1, len(parsed)):\n        if parsed[i][0] < parsed[i - 1][0]:\n            raise ValueError(\"timestamps must be non-decreasing\")\n\n    tokens = capacity\n    remainder = 0\n    last_ts = 0\n    result = []\n\n    for ts, cost in parsed:\n        elapsed = ts - last_ts\n        last_ts = ts\n        total = remainder + elapsed * refill\n        gained = total // 1000\n        remainder = total % 1000\n        tokens = min(capacity, tokens + gained)\n\n        if tokens >= cost:\n            tokens -= cost\n            result.append(True)\n        else:\n            result.append(False)\n\n    return result\n```",
+  "verified_interaction": {
+    "task": "实现 token_bucket(capacity, refill, events)，模拟整数令牌桶并返回每次事件是否被接受。\ncapacity 与 refill 是非负整数（bool 不合法），capacity 是桶容量（单位：token），refill 是每 1000 毫秒补充的 token 数。events 是 (timestamp_ms, cost) 二元组的列表，timestamp_ms 是非递减非负整数，cost 是非负整数 token 数。\n桶初始为满。每个事件先按距上一事件的时间差补充 token（按毫秒线性补充并累积余量，补充后不超过容量），再在余额足够 cost 时接受并扣除，否则拒绝。第一个事件的时间戳同样从 0 时刻开始计算。返回 bool 列表。\n任一输入不满足上述类型或取值约束（bool 不算整数；events 必须是 list 或 tuple，每个元素是长度 2 的 tuple；时间戳必须非递减）时抛 ValueError。\n例如 capacity=1、refill=1、events=[(0,1),(500,1),(1000,1)] 返回 [True, False, True]。",
+    "entry_point": "token_bucket",
+    "initial_output": "```python\ndef token_bucket(capacity, refill, events):\n    def is_int(x):\n        return isinstance(x, int) and not isinstance(x, bool)\n\n    if not is_int(capacity) or capacity < 0:\n        raise ValueError(\"capacity must be a non-negative integer\")\n    if not is_int(refill) or refill < 0:\n        raise ValueError(\"refill must be a non-negative integer\")\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n\n    parsed = []\n    for ev in events:\n        if not isinstance(ev, tuple) or len(ev) != 2:\n            raise ValueError(\"each event must be a length-2 tuple\")\n        ts, cost = ev\n        if not is_int(ts) or ts < 0:\n            raise ValueError(\"timestamp must be a non-negative integer\")\n        if not is_int(cost) or cost < 0:\n            raise ValueError(\"cost must be a non-negative integer\")\n        parsed.append((ts, cost))\n\n    for i in range(1, len(parsed)):\n        if parsed[i][0] < parsed[i - 1][0]:\n            raise ValueError(\"timestamps must be non-decreasing\")\n\n    tokens = capacity\n    remainder = 0\n    last_ts = 0\n    result = []\n\n    for ts, cost in parsed:\n        elapsed = ts - last_ts\n        last_ts = ts\n        total = remainder + elapsed * refill\n        gained = total // 1000\n        remainder = total % 1000\n        tokens = min(capacity, tokens + gained)\n\n        if tokens >= cost:\n            tokens -= cost\n            result.append(True)\n        else:\n            result.append(False)\n\n    return result\n```",
+    "final_output": "```python\ndef token_bucket(capacity, refill, events):\n    def is_int(x):\n        return isinstance(x, int) and not isinstance(x, bool)\n\n    if not is_int(capacity) or capacity < 0:\n        raise ValueError(\"capacity must be a non-negative integer\")\n    if not is_int(refill) or refill < 0:\n        raise ValueError(\"refill must be a non-negative integer\")\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n\n    parsed = []\n    for ev in events:\n        if not isinstance(ev, tuple) or len(ev) != 2:\n            raise ValueError(\"each event must be a length-2 tuple\")\n        ts, cost = ev\n        if not is_int(ts) or ts < 0:\n            raise ValueError(\"timestamp must be a non-negative integer\")\n        if not is_int(cost) or cost < 0:\n            raise ValueError(\"cost must be a non-negative integer\")\n        parsed.append((ts, cost))\n\n    for i in range(1, len(parsed)):\n        if parsed[i][0] < parsed[i - 1][0]:\n            raise ValueError(\"timestamps must be non-decreasing\")\n\n    tokens = capacity\n    remainder = 0\n    last_ts = 0\n    result = []\n\n    for ts, cost in parsed:\n        elapsed = ts - last_ts\n        last_ts = ts\n        total = remainder + elapsed * refill\n        gained = total // 1000\n        remainder = total % 1000\n        tokens = min(capacity, tokens + gained)\n\n        if tokens >= cost:\n            tokens -= cost\n            result.append(True)\n        else:\n            result.append(False)\n\n    return result\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "每个事件先按距上一事件的时间差补充 token（按毫秒线性补充并累积余量，补充后不超过容量），再在余额足够 cost 时接受并扣除，否则拒绝。",
+        "reason": "容量1、每1000ms补1，事件间隔500ms累积余量，验证余量累积与容量上限共同作用。",
+        "args": "(1, 1, [(0, 1), (500, 1), (1000, 1)])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "[True, False, True]"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "第一个事件的时间戳同样从 0 时刻开始计算。",
+        "reason": "首个事件时间戳非0，从0开始补充但受容量上限约束，验证初始满桶与补充上限。",
+        "args": "(2, 1, [(5000, 2), (5000, 1)])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "[True, False]"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "任一输入不满足上述类型或取值约束（bool 不算整数；events 必须是 list 或 tuple，每个元素是长度 2 的 tuple；时间戳必须非递减）时抛 ValueError。",
+        "reason": "时间戳递减违反非递减约束，应抛 ValueError。",
+        "args": "(1, 1, [(100, 1), (50, 1)])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "初始满桶1。事件0：补充0，余额1，接受扣至0。事件500：距上次500ms，refill=1/1000ms，累积500ms余量，补充0，余额0，cost1拒绝。事件1000：距上次500ms，累积余量达1000ms，补充1，余额1，接受扣至0。结果[True,False,True]，与示例一致。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "初始满桶2。事件0时间戳5000：从0时刻补充5000ms，按1/1000ms应补5，但受容量上限2限制，余额仍为2；cost2接受扣至0。事件5000：时间差0，无补充，余额0，cost1拒绝。结果[True,False]，符合规则。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "时间戳100后接50，违反非递减约束，规范明确要求抛ValueError。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115828,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115079,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115598,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "discovery_strategy": "interaction_focus"
+      },
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "self_1": {
+    "feedback": "实现已满足任务要求，无需修改。\n\n逐项核对：\n\n- **类型校验**：`is_int` 排除 `bool`，`capacity`/`refill`/`ts`/`cost` 均校验非负整数；`events` 必须是 `list` 或 `tuple`；每个事件必须是长度 2 的 `tuple`。均抛 `ValueError`。\n- **时间戳非递减**：在解析后单独检查，违反抛 `ValueError`。\n- **初始满桶**：`tokens = capacity`。\n- **第一个事件从 0 时刻计算**：`last_ts = 0`，`elapsed = ts - 0`，正确。\n- **线性补充与余量累积**：`total = remainder + elapsed * refill`，`gained = total // 1000`，`remainder = total % 1000`，按毫秒累积余量，正确。\n- **补充上限**：`tokens = min(capacity, tokens + gained)`，正确。\n- **先补充后判断**：补充在判断 `tokens >= cost` 之前，正确。\n- **接受则扣除、拒绝不扣**：正确。\n- **示例**：`capacity=1, refill=1, events=[(0,1),(500,1),(1000,1)]`：\n  - t=0：elapsed=0，tokens=1，接受→0，True\n  - t=500：elapsed=500，total=500，gained=0，remainder=500，tokens=0，拒绝，False\n  - t=1000：elapsed=500，total=500+500=1000，gained=1，remainder=0，tokens=1，接受→0，True\n  - 返回 `[True, False, True]`，符合。\n\n边界情况也正确：`capacity=0` 时任何正 cost 都拒绝；`refill=0` 时无补充；`cost=0` 时总是接受且不扣；空 `events` 返回 `[]`；同一时间戳多个事件 `elapsed=0` 不补充。",
+    "output": "```python\ndef token_bucket(capacity, refill, events):\n    def is_int(x):\n        return isinstance(x, int) and not isinstance(x, bool)\n\n    if not is_int(capacity) or capacity < 0:\n        raise ValueError(\"capacity must be a non-negative integer\")\n    if not is_int(refill) or refill < 0:\n        raise ValueError(\"refill must be a non-negative integer\")\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n\n    parsed = []\n    for ev in events:\n        if not isinstance(ev, tuple) or len(ev) != 2:\n            raise ValueError(\"each event must be a length-2 tuple\")\n        ts, cost = ev\n        if not is_int(ts) or ts < 0:\n            raise ValueError(\"timestamp must be a non-negative integer\")\n        if not is_int(cost) or cost < 0:\n            raise ValueError(\"cost must be a non-negative integer\")\n        parsed.append((ts, cost))\n\n    for i in range(1, len(parsed)):\n        if parsed[i][0] < parsed[i - 1][0]:\n            raise ValueError(\"timestamps must be non-decreasing\")\n\n    tokens = capacity\n    remainder = 0\n    last_ts = 0\n    result = []\n\n    for ts, cost in parsed:\n        elapsed = ts - last_ts\n        last_ts = ts\n        total = remainder + elapsed * refill\n        gained = total // 1000\n        remainder = total % 1000\n        tokens = min(capacity, tokens + gained)\n\n        if tokens >= cost:\n            tokens -= cost\n            result.append(True)\n        else:\n            result.append(False)\n\n    return result\n```"
+  },
+  "verified_default": {
+    "task": "实现 token_bucket(capacity, refill, events)，模拟整数令牌桶并返回每次事件是否被接受。\ncapacity 与 refill 是非负整数（bool 不合法），capacity 是桶容量（单位：token），refill 是每 1000 毫秒补充的 token 数。events 是 (timestamp_ms, cost) 二元组的列表，timestamp_ms 是非递减非负整数，cost 是非负整数 token 数。\n桶初始为满。每个事件先按距上一事件的时间差补充 token（按毫秒线性补充并累积余量，补充后不超过容量），再在余额足够 cost 时接受并扣除，否则拒绝。第一个事件的时间戳同样从 0 时刻开始计算。返回 bool 列表。\n任一输入不满足上述类型或取值约束（bool 不算整数；events 必须是 list 或 tuple，每个元素是长度 2 的 tuple；时间戳必须非递减）时抛 ValueError。\n例如 capacity=1、refill=1、events=[(0,1),(500,1),(1000,1)] 返回 [True, False, True]。",
+    "entry_point": "token_bucket",
+    "initial_output": "```python\ndef token_bucket(capacity, refill, events):\n    def is_int(x):\n        return isinstance(x, int) and not isinstance(x, bool)\n\n    if not is_int(capacity) or capacity < 0:\n        raise ValueError(\"capacity must be a non-negative integer\")\n    if not is_int(refill) or refill < 0:\n        raise ValueError(\"refill must be a non-negative integer\")\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n\n    parsed = []\n    for ev in events:\n        if not isinstance(ev, tuple) or len(ev) != 2:\n            raise ValueError(\"each event must be a length-2 tuple\")\n        ts, cost = ev\n        if not is_int(ts) or ts < 0:\n            raise ValueError(\"timestamp must be a non-negative integer\")\n        if not is_int(cost) or cost < 0:\n            raise ValueError(\"cost must be a non-negative integer\")\n        parsed.append((ts, cost))\n\n    for i in range(1, len(parsed)):\n        if parsed[i][0] < parsed[i - 1][0]:\n            raise ValueError(\"timestamps must be non-decreasing\")\n\n    tokens = capacity\n    remainder = 0\n    last_ts = 0\n    result = []\n\n    for ts, cost in parsed:\n        elapsed = ts - last_ts\n        last_ts = ts\n        total = remainder + elapsed * refill\n        gained = total // 1000\n        remainder = total % 1000\n        tokens = min(capacity, tokens + gained)\n\n        if tokens >= cost:\n            tokens -= cost\n            result.append(True)\n        else:\n            result.append(False)\n\n    return result\n```",
+    "final_output": "```python\ndef token_bucket(capacity, refill, events):\n    def is_int(x):\n        return isinstance(x, int) and not isinstance(x, bool)\n\n    if not is_int(capacity) or capacity < 0:\n        raise ValueError(\"capacity must be a non-negative integer\")\n    if not is_int(refill) or refill < 0:\n        raise ValueError(\"refill must be a non-negative integer\")\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n\n    parsed = []\n    for ev in events:\n        if not isinstance(ev, tuple) or len(ev) != 2:\n            raise ValueError(\"each event must be a length-2 tuple\")\n        ts, cost = ev\n        if not is_int(ts) or ts < 0:\n            raise ValueError(\"timestamp must be a non-negative integer\")\n        if not is_int(cost) or cost < 0:\n            raise ValueError(\"cost must be a non-negative integer\")\n        parsed.append((ts, cost))\n\n    for i in range(1, len(parsed)):\n        if parsed[i][0] < parsed[i - 1][0]:\n            raise ValueError(\"timestamps must be non-decreasing\")\n\n    tokens = capacity\n    remainder = 0\n    last_ts = 0\n    result = []\n\n    for ts, cost in parsed:\n        elapsed = ts - last_ts\n        last_ts = ts\n        total = remainder + elapsed * refill\n        gained = total // 1000\n        remainder = total % 1000\n        tokens = min(capacity, tokens + gained)\n\n        if tokens >= cost:\n            tokens -= cost\n            result.append(True)\n        else:\n            result.append(False)\n\n    return result\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "capacity 与 refill 是非负整数（bool 不合法）",
+        "reason": "bool 不合法，应抛 ValueError",
+        "args": "(True, 1, [])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "events 必须是 list 或 tuple，每个元素是长度 2 的 tuple",
+        "reason": "元素为 list 而非 tuple，应抛 ValueError",
+        "args": "(1, 1, [[0, 1]])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "时间戳必须非递减",
+        "reason": "时间戳递减，应抛 ValueError",
+        "args": "(1, 1, [(1000, 1), (500, 1)])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "规范明确 bool 不算整数，capacity=True 违反约束，应抛 ValueError。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "规范要求 events 每个元素是长度 2 的 tuple，[[0,1]] 的元素是 list，违反约束，应抛 ValueError。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "规范要求时间戳非递减，1000 后接 500 递减，违反约束，应抛 ValueError。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116242,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115547,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115758,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "grades": {
+    "direct": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.115716,
+      "detail": "all trusted assertion tests completed"
+    },
+    "self_1": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116245,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_default": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116817,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_interaction": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116749,
+      "detail": "all trusted assertion tests completed"
+    }
+  },
+  "case_audit": {
+    "verified_default": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115471,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.116557,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115649,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    },
+    "verified_interaction": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.11545,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115726,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115132,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    }
+  },
+  "mutants": {
+    "verified_default": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": false
+      },
+      {
+        "mutant": "补充后不封顶",
+        "accepted_cases": 3,
+        "caught": false
+      }
+    ],
+    "verified_interaction": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": true
+      },
+      {
+        "mutant": "补充后不封顶",
+        "accepted_cases": 3,
+        "caught": true
+      }
+    ]
+  }
+}

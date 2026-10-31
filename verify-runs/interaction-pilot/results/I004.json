@@ -1,0 +1,315 @@
+{
+  "id": "I004",
+  "initial": "```python\nimport re\n\ndef parse_duration(text):\n    if not isinstance(text, str) or not text:\n        raise ValueError(\"text must be a non-empty str\")\n    pattern = re.compile(r'(\\d+)(ms|h|m|s)')\n    pos = 0\n    total = 0\n    multipliers = {'h': 3600000, 'm': 60000, 's': 1000, 'ms': 1}\n    while pos < len(text):\n        match = pattern.match(text, pos)\n        if not match:\n            raise ValueError(\"invalid duration string\")\n        num_str, unit = match.groups()\n        total += int(num_str) * multipliers[unit]\n        pos = match.end()\n    return total\n```",
+  "self_1": {
+    "feedback": "**检查结论：实现正确，无需修改。**\n\n逐项核对：\n\n1. **非空 str 校验**：`not isinstance(text, str) or not text` 正确覆盖非 str 与空串，均抛 `ValueError`。✓\n2. **语法「非负整数 + 单位」拼接**：`(\\d+)(ms|h|m|s)` 要求至少一位数字，`\\d+` 允许前导 0。✓\n3. **无空格/其他字符**：正则不含空白，且循环用 `pattern.match(text, pos)` 从当前位置锚定匹配，任何非法字符都会导致 `match` 失败并抛错。✓\n4. **单位最长匹配**：交替顺序 `ms|h|m|s` 中 `ms` 在 `m` 之前，Python 正则交替按顺序尝试，故 `\"10ms\"` 会匹配 `ms` 而非 `m` 后残留 `s`。✓\n5. **单位重复、顺序任意**：循环逐段消费，无顺序或重复限制。✓\n6. **完整消费**：`while pos < len(text)` 配合 `match.end()` 推进，末尾若残留非法内容会因下一轮匹配失败抛错；若某段匹配成功但后面还有字符，也会继续校验。✓\n7. **负数/小数/空格**：`-`、`.`、空格均不被 `\\d+` 或单位接受，抛 `ValueError`。✓\n8. **示例**：`\"1h30m\"` → `1*3600000 + 30*60000 = 5400000`；`\"10ms\"` → `10*1 = 10`。✓\n\n边界情况补充验证：\n- `\"0ms\"` → 0，合法。✓\n- `\"007s\"` → 7000，前导 0 合法。✓\n- `\"1m1m\"` → 120000，重复单位合法。✓\n- `\"1ms\"` 不会被误解析为 `1m` + 残留 `s`（因 `ms` 优先）。✓\n- `\"1\"`、`\"h\"`、`\"1x\"`、`\"1 h\"`、`\"1.5s\"`、`\"-1s\"`、`\"\"` 均抛 `ValueError`。✓\n\n实现满足任务全部明确要求，未引入题目未要求的额外限制。",
+    "output": "```python\nimport re\n\ndef parse_duration(text):\n    if not isinstance(text, str) or not text:\n        raise ValueError(\"text must be a non-empty str\")\n    pattern = re.compile(r'(\\d+)(ms|h|m|s)')\n    pos = 0\n    total = 0\n    multipliers = {'h': 3600000, 'm': 60000, 's': 1000, 'ms': 1}\n    while pos < len(text):\n        match = pattern.match(text, pos)\n        if not match:\n            raise ValueError(\"invalid duration string\")\n        num_str, unit = match.groups()\n        total += int(num_str) * multipliers[unit]\n        pos = match.end()\n    return total\n```"
+  },
+  "verified_default": {
+    "task": "实现 parse_duration(text)，把时长字符串解析成毫秒整数。text 必须是非空 str，否则抛 ValueError。\n语法是若干「非负整数 + 单位」依次拼接，中间不允许空格或其他字符；单位只能是 h、m、s、ms。整数允许前导 0。单位按最长匹配：ms 优先于 m，s 与 h 无歧义。单位可以重复、顺序任意。\n整个字符串必须被完整消费；出现空串、未知单位、负数、小数、空格或其他非法内容均抛 ValueError。例如 parse_duration(\"1h30m\") == 5400000，parse_duration(\"10ms\") == 10。",
+    "entry_point": "parse_duration",
+    "initial_output": "```python\nimport re\n\ndef parse_duration(text):\n    if not isinstance(text, str) or not text:\n        raise ValueError(\"text must be a non-empty str\")\n    pattern = re.compile(r'(\\d+)(ms|h|m|s)')\n    pos = 0\n    total = 0\n    multipliers = {'h': 3600000, 'm': 60000, 's': 1000, 'ms': 1}\n    while pos < len(text):\n        match = pattern.match(text, pos)\n        if not match:\n            raise ValueError(\"invalid duration string\")\n        num_str, unit = match.groups()\n        total += int(num_str) * multipliers[unit]\n        pos = match.end()\n    return total\n```",
+    "final_output": "```python\nimport re\n\ndef parse_duration(text):\n    if not isinstance(text, str) or not text:\n        raise ValueError(\"text must be a non-empty str\")\n    pattern = re.compile(r'(\\d+)(ms|h|m|s)')\n    pos = 0\n    total = 0\n    multipliers = {'h': 3600000, 'm': 60000, 's': 1000, 'ms': 1}\n    while pos < len(text):\n        match = pattern.match(text, pos)\n        if not match:\n            raise ValueError(\"invalid duration string\")\n        num_str, unit = match.groups()\n        total += int(num_str) * multipliers[unit]\n        pos = match.end()\n    return total\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "text 必须是非空 str，否则抛 ValueError。",
+        "reason": "空字符串属于非空 str 要求之外，规范明确要求抛 ValueError。",
+        "args": "('',)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "单位按最长匹配：ms 优先于 m，s 与 h 无歧义。",
+        "reason": "验证 ms 优先于 m，10ms 应解析为 10 毫秒。",
+        "args": "('10ms',)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "10"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "整个字符串必须被完整消费；出现空串、未知单位、负数、小数、空格或其他非法内容均抛 ValueError。",
+        "reason": "含空格违反不允许空格的规定，应抛 ValueError。",
+        "args": "('1h 30m',)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "规范明确要求 text 必须是非空 str，否则抛 ValueError，空字符串应抛 ValueError。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "规范规定 ms 优先于 m，且示例明确 parse_duration(\"10ms\") == 10，期望值正确。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "规范规定中间不允许空格，含空格的字符串应抛 ValueError。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115713,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115322,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115032,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "verified_interaction": {
+    "task": "实现 parse_duration(text)，把时长字符串解析成毫秒整数。text 必须是非空 str，否则抛 ValueError。\n语法是若干「非负整数 + 单位」依次拼接，中间不允许空格或其他字符；单位只能是 h、m、s、ms。整数允许前导 0。单位按最长匹配：ms 优先于 m，s 与 h 无歧义。单位可以重复、顺序任意。\n整个字符串必须被完整消费；出现空串、未知单位、负数、小数、空格或其他非法内容均抛 ValueError。例如 parse_duration(\"1h30m\") == 5400000，parse_duration(\"10ms\") == 10。",
+    "entry_point": "parse_duration",
+    "initial_output": "```python\nimport re\n\ndef parse_duration(text):\n    if not isinstance(text, str) or not text:\n        raise ValueError(\"text must be a non-empty str\")\n    pattern = re.compile(r'(\\d+)(ms|h|m|s)')\n    pos = 0\n    total = 0\n    multipliers = {'h': 3600000, 'm': 60000, 's': 1000, 'ms': 1}\n    while pos < len(text):\n        match = pattern.match(text, pos)\n        if not match:\n            raise ValueError(\"invalid duration string\")\n        num_str, unit = match.groups()\n        total += int(num_str) * multipliers[unit]\n        pos = match.end()\n    return total\n```",
+    "final_output": "```python\nimport re\n\ndef parse_duration(text):\n    if not isinstance(text, str) or not text:\n        raise ValueError(\"text must be a non-empty str\")\n    pattern = re.compile(r'(\\d+)(ms|h|m|s)')\n    pos = 0\n    total = 0\n    multipliers = {'h': 3600000, 'm': 60000, 's': 1000, 'ms': 1}\n    while pos < len(text):\n        match = pattern.match(text, pos)\n        if not match:\n            raise ValueError(\"invalid duration string\")\n        num_str, unit = match.groups()\n        total += int(num_str) * multipliers[unit]\n        pos = match.end()\n    return total\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "单位按最长匹配：ms 优先于 m，s 与 h 无歧义。",
+        "reason": "最长匹配与重复单位组合：10ms 应解析为 10 毫秒而非 10 分钟。",
+        "args": "(\"10ms\",)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "10"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "单位可以重复、顺序任意。",
+        "reason": "重复且乱序单位同时作用：1h30m 示例与重复 m 组合。",
+        "args": "(\"1h30m\",)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "5400000"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "整个字符串必须被完整消费；出现空串、未知单位、负数、小数、空格或其他非法内容均抛 ValueError。",
+        "reason": "最长匹配后残留非法字符，完整消费规则与单位匹配共同作用。",
+        "args": "(\"1h30mx\",)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "规范明确 ms 优先于 m，且示例给出 parse_duration(\"10ms\") == 10，期望值 10 毫秒正确。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "规范示例明确 parse_duration(\"1h30m\") == 5400000，1h=3600000ms，30m=1800000ms，合计 5400000ms，与期望一致。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "\"1h30mx\" 中 x 不是合法单位，且整个字符串必须被完整消费，出现未知单位/非法内容应抛 ValueError，期望正确。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116128,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115845,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115698,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "discovery_strategy": "interaction_focus"
+      },
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "grades": {
+    "direct": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116282,
+      "detail": "all trusted assertion tests completed"
+    },
+    "self_1": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.115415,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_default": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116342,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_interaction": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116247,
+      "detail": "all trusted assertion tests completed"
+    }
+  },
+  "case_audit": {
+    "verified_default": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115599,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115721,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.165541,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    },
+    "verified_interaction": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115486,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115537,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115649,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    }
+  },
+  "mutants": {
+    "verified_default": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": true
+      }
+    ],
+    "verified_interaction": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": true
+      }
+    ]
+  }
+}

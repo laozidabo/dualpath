@@ -1,0 +1,315 @@
+{
+  "id": "I007",
+  "initial": "```python\ndef parse_config(text):\n    if not isinstance(text, str):\n        raise ValueError(\"text must be a str\")\n\n    result = {}\n    for raw_line in text.split(\"\\n\"):\n        line = raw_line.strip()\n        if not line or line.startswith(\"#\"):\n            continue\n        if \"=\" not in line:\n            raise ValueError(\"line must contain '='\")\n        key_part, value_part = line.split(\"=\", 1)\n        key = key_part.strip()\n        if not key or any(ch.isspace() for ch in key):\n            raise ValueError(\"invalid key\")\n        value = value_part.strip()\n\n        if value and value[0] in (\"'\", '\"'):\n            quote = value[0]\n            if len(value) < 2 or value[-1] != quote:\n                raise ValueError(\"unbalanced quotes\")\n            value = value[1:-1]\n        else:\n            if value in (\"'\", '\"'):\n                raise ValueError(\"single quote character\")\n            hash_index = value.find(\"#\")\n            if hash_index != -1:\n                value = value[:hash_index]\n            value = value.strip()\n\n        if key in result:\n            raise ValueError(\"duplicate key\")\n        result[key] = value\n\n    return result\n```",
+  "self_1": {
+    "feedback": "逐项核对后，候选实现存在一个明确的边界情况错误，其余要求基本满足。\n\n## 问题：未加引号的值恰好是单个引号字符时，检查位置错误\n\n任务要求：\n\n> 若 value 以引号开头但不以同种引号结尾，或 value 恰好只有一个引号字符，抛 ValueError。\n\n候选代码：\n\n```python\nif value and value[0] in (\"'\", '\"'):\n    quote = value[0]\n    if len(value) < 2 or value[-1] != quote:\n        raise ValueError(\"unbalanced quotes\")\n    value = value[1:-1]\nelse:\n    if value in (\"'\", '\"'):\n        raise ValueError(\"single quote character\")\n    ...\n```\n\n对于 `value == \"'\"` 或 `value == '\"'`，`value[0]` 是引号，因此进入第一个分支；`len(value) < 2` 成立，会抛 `ValueError`。所以“恰好只有一个引号字符”的情况实际上被第一个分支覆盖了，`else` 里的检查是死代码。这一点本身不会导致漏抛异常。\n\n但需要检查的是：**单个引号字符是否可能绕过检查？** 由于 `value` 已经 `strip()`，单个引号必然以引号开头，会进入第一个分支并因 `len < 2` 抛错。因此该要求实际满足。\n\n## 继续检查其他边界\n\n### 1. 引号成对但内部内容原样保留\n\n`value = value[1:-1]` 正确去掉一对首尾相同引号，内部 `#`、`=`、空格均保留。满足。\n\n### 2. 以引号开头但不以同种引号结尾\n\n例如 `a=\"x'`：`value[0] == '\"'`，`value[-1] == \"'\" != '\"'`，抛错。满足。\n\n### 3. 不以引号开头但包含引号\n\n例如 `a=x\"y`：进入 `else`，`value` 不是单个引号，按未加引号处理，查找 `#`。任务只规定“以引号开头”才做引号配对，因此这是允许的。满足。\n\n### 4. 未加引号值中的注释\n\n`a=1 # note` → `value_part.strip()` 得 `1 # note`，`find(\"#\")` 截断为 `1 `，再 `strip()` 得 `1`。满足。\n\n### 5. 空 value\n\n`a=` → `value = \"\"`，`if value and ...` 为假，进入 `else`；`value in (\"'\", '\"')` 为假；`find` 返回 -1；结果 `\"\"`。任务未禁止空 value，满足。\n\n### 6. key 校验\n\n`key_part.strip()` 后检查非空且不含任何 `isspace()` 字符。任务说“不含空白字符”，`isspace()` 覆盖空格、制表符等，合理。满足。\n\n### 7. 重复 key\n\n在赋值前检查 `if key in result`，抛错。满足。\n\n### 8. 返回顺序\n\nPython 3.7+ dict 保持插入顺序，按首次出现顺序。满足。\n\n### 9. 非 str 输入\n\n`isinstance(text, str)` 检查，否则 `ValueError`。满足。\n\n### 10. 分行与忽略规则\n\n`text.split(\"\\n\")`、`strip()`、空行与 `#` 开头行忽略。满足。\n\n## 一个值得注意的细节：`value` 以引号开头且长度 ≥ 2，但结尾同种引号，内部还有引号\n\n例如 `a=\"x\"y\"`：`value[0] == '\"'`，`value[-1] == '\"'`，去掉首尾得 `x\"y`。任务说“去掉一对首尾相同的引号，引号内的内容原样保留”，这里确实只去掉一对首尾引号，内部 `\"` 原样保留。符合字面要求。\n\n## 结论\n\n候选实现满足任务列出的各项明确要求，包括容易出错的单引号字符、未配对引号、注释截断、key 空白校验、重复 key 和顺序保持。**无需修改。**\n\n唯一可提的是 `else` 分支中的 `if value in (\"'\", '\"')` 是死代码（单引号值必然进入第一个分支并因 `len < 2` 抛错），但它不影响正确性，也不构成实现错误。",
+    "output": "```python\ndef parse_config(text):\n    if not isinstance(text, str):\n        raise ValueError(\"text must be a str\")\n\n    result = {}\n    for raw_line in text.split(\"\\n\"):\n        line = raw_line.strip()\n        if not line or line.startswith(\"#\"):\n            continue\n        if \"=\" not in line:\n            raise ValueError(\"line must contain '='\")\n        key_part, value_part = line.split(\"=\", 1)\n        key = key_part.strip()\n        if not key or any(ch.isspace() for ch in key):\n            raise ValueError(\"invalid key\")\n        value = value_part.strip()\n\n        if value and value[0] in (\"'\", '\"'):\n            quote = value[0]\n            if len(value) < 2 or value[-1] != quote:\n                raise ValueError(\"unbalanced quotes\")\n            value = value[1:-1]\n        else:\n            hash_index = value.find(\"#\")\n            if hash_index != -1:\n                value = value[:hash_index]\n            value = value.strip()\n\n        if key in result:\n            raise ValueError(\"duplicate key\")\n        result[key] = value\n\n    return result\n```"
+  },
+  "verified_default": {
+    "task": "实现 parse_config(text)，把配置文本解析成 dict[str, str]。text 必须是 str，否则抛 ValueError。\n按 \\n 分行，逐行去掉首尾空白；空行与以 # 开头的行忽略。每行必须包含 =，否则抛 ValueError；key 取第一个 = 之前的部分并去掉首尾空白，必须非空且不含空白字符；value 取第一个 = 之后的部分并去掉首尾空白。\n引号必须成对：value 长度至少为 2 才可去掉一对首尾相同的引号，引号内的内容原样保留（其中的 #、=、空格都不特殊）。若 value 以引号开头但不以同种引号结尾，或 value 恰好只有一个引号字符，抛 ValueError。未加引号的 value 中，第一个 # 之后视为注释并去掉，再对剩余部分去掉首尾空白。\n同一个 key 出现两次抛 ValueError。返回按首次出现顺序的 dict。例如 parse_config('a=1 # note\\nb=\"x # y\"') == {'a': '1', 'b': 'x # y'}。",
+    "entry_point": "parse_config",
+    "initial_output": "```python\ndef parse_config(text):\n    if not isinstance(text, str):\n        raise ValueError(\"text must be a str\")\n\n    result = {}\n    for raw_line in text.split(\"\\n\"):\n        line = raw_line.strip()\n        if not line or line.startswith(\"#\"):\n            continue\n        if \"=\" not in line:\n            raise ValueError(\"line must contain '='\")\n        key_part, value_part = line.split(\"=\", 1)\n        key = key_part.strip()\n        if not key or any(ch.isspace() for ch in key):\n            raise ValueError(\"invalid key\")\n        value = value_part.strip()\n\n        if value and value[0] in (\"'\", '\"'):\n            quote = value[0]\n            if len(value) < 2 or value[-1] != quote:\n                raise ValueError(\"unbalanced quotes\")\n            value = value[1:-1]\n        else:\n            if value in (\"'\", '\"'):\n                raise ValueError(\"single quote character\")\n            hash_index = value.find(\"#\")\n            if hash_index != -1:\n                value = value[:hash_index]\n            value = value.strip()\n\n        if key in result:\n            raise ValueError(\"duplicate key\")\n        result[key] = value\n\n    return result\n```",
+    "final_output": "```python\ndef parse_config(text):\n    if not isinstance(text, str):\n        raise ValueError(\"text must be a str\")\n\n    result = {}\n    for raw_line in text.split(\"\\n\"):\n        line = raw_line.strip()\n        if not line or line.startswith(\"#\"):\n            continue\n        if \"=\" not in line:\n            raise ValueError(\"line must contain '='\")\n        key_part, value_part = line.split(\"=\", 1)\n        key = key_part.strip()\n        if not key or any(ch.isspace() for ch in key):\n            raise ValueError(\"invalid key\")\n        value = value_part.strip()\n\n        if value and value[0] in (\"'\", '\"'):\n            quote = value[0]\n            if len(value) < 2 or value[-1] != quote:\n                raise ValueError(\"unbalanced quotes\")\n            value = value[1:-1]\n        else:\n            if value in (\"'\", '\"'):\n                raise ValueError(\"single quote character\")\n            hash_index = value.find(\"#\")\n            if hash_index != -1:\n                value = value[:hash_index]\n            value = value.strip()\n\n        if key in result:\n            raise ValueError(\"duplicate key\")\n        result[key] = value\n\n    return result\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "text 必须是 str，否则抛 ValueError。",
+        "reason": "非字符串输入应抛 ValueError。",
+        "args": "(123,)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "value 长度至少为 2 才可去掉一对首尾相同的引号",
+        "reason": "单个引号字符的 value 应抛 ValueError。",
+        "args": "('a=\"',)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "同一个 key 出现两次抛 ValueError。",
+        "reason": "重复 key 应抛 ValueError。",
+        "args": "('a=1\\na=2',)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "规范明确要求 text 必须是 str，否则抛 ValueError；输入 123 为非字符串，期望抛 ValueError 一致。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "value 为单个引号字符 \"，规范规定 value 恰好只有一个引号字符时抛 ValueError，期望一致。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "两行 key 均为 a，规范规定同一 key 出现两次抛 ValueError，期望一致。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115766,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.11505,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.114882,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "verified_interaction": {
+    "task": "实现 parse_config(text)，把配置文本解析成 dict[str, str]。text 必须是 str，否则抛 ValueError。\n按 \\n 分行，逐行去掉首尾空白；空行与以 # 开头的行忽略。每行必须包含 =，否则抛 ValueError；key 取第一个 = 之前的部分并去掉首尾空白，必须非空且不含空白字符；value 取第一个 = 之后的部分并去掉首尾空白。\n引号必须成对：value 长度至少为 2 才可去掉一对首尾相同的引号，引号内的内容原样保留（其中的 #、=、空格都不特殊）。若 value 以引号开头但不以同种引号结尾，或 value 恰好只有一个引号字符，抛 ValueError。未加引号的 value 中，第一个 # 之后视为注释并去掉，再对剩余部分去掉首尾空白。\n同一个 key 出现两次抛 ValueError。返回按首次出现顺序的 dict。例如 parse_config('a=1 # note\\nb=\"x # y\"') == {'a': '1', 'b': 'x # y'}。",
+    "entry_point": "parse_config",
+    "initial_output": "```python\ndef parse_config(text):\n    if not isinstance(text, str):\n        raise ValueError(\"text must be a str\")\n\n    result = {}\n    for raw_line in text.split(\"\\n\"):\n        line = raw_line.strip()\n        if not line or line.startswith(\"#\"):\n            continue\n        if \"=\" not in line:\n            raise ValueError(\"line must contain '='\")\n        key_part, value_part = line.split(\"=\", 1)\n        key = key_part.strip()\n        if not key or any(ch.isspace() for ch in key):\n            raise ValueError(\"invalid key\")\n        value = value_part.strip()\n\n        if value and value[0] in (\"'\", '\"'):\n            quote = value[0]\n            if len(value) < 2 or value[-1] != quote:\n                raise ValueError(\"unbalanced quotes\")\n            value = value[1:-1]\n        else:\n            if value in (\"'\", '\"'):\n                raise ValueError(\"single quote character\")\n            hash_index = value.find(\"#\")\n            if hash_index != -1:\n                value = value[:hash_index]\n            value = value.strip()\n\n        if key in result:\n            raise ValueError(\"duplicate key\")\n        result[key] = value\n\n    return result\n```",
+    "final_output": "```python\ndef parse_config(text):\n    if not isinstance(text, str):\n        raise ValueError(\"text must be a str\")\n\n    result = {}\n    for raw_line in text.split(\"\\n\"):\n        line = raw_line.strip()\n        if not line or line.startswith(\"#\"):\n            continue\n        if \"=\" not in line:\n            raise ValueError(\"line must contain '='\")\n        key_part, value_part = line.split(\"=\", 1)\n        key = key_part.strip()\n        if not key or any(ch.isspace() for ch in key):\n            raise ValueError(\"invalid key\")\n        value = value_part.strip()\n\n        if value and value[0] in (\"'\", '\"'):\n            quote = value[0]\n            if len(value) < 2 or value[-1] != quote:\n                raise ValueError(\"unbalanced quotes\")\n            value = value[1:-1]\n        else:\n            if value in (\"'\", '\"'):\n                raise ValueError(\"single quote character\")\n            hash_index = value.find(\"#\")\n            if hash_index != -1:\n                value = value[:hash_index]\n            value = value.strip()\n\n        if key in result:\n            raise ValueError(\"duplicate key\")\n        result[key] = value\n\n    return result\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "value 长度至少为 2 才可去掉一对首尾相同的引号，引号内的内容原样保留（其中的 #、=、空格都不特殊）",
+        "reason": "引号值含 # 和 =，同时验证引号内不触发注释与分割",
+        "args": "('a=\"x # y = z\"',)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "{'a': 'x # y = z'}"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "若 value 以引号开头但不以同种引号结尾，或 value 恰好只有一个引号字符，抛 ValueError",
+        "reason": "以引号开头但结尾不同，且含 # 注释，验证引号检查优先于注释剥离",
+        "args": "('a=\"x # y',)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "同一个 key 出现两次抛 ValueError",
+        "reason": "两行 key 去空白后相同，其中一行带注释，验证去空白后相等键冲突",
+        "args": "('a=1\\n a =2 # c',)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "value 为 \"x # y = z\"，首尾同为双引号且长度≥2，去掉一对引号后内容原样保留，得到 x # y = z；引号内的 # 和 = 不特殊，符合规范。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "value 为 \"x # y，以双引号开头但不以双引号结尾，规范规定此时抛 ValueError；引号成对检查应先于未加引号时的注释剥离，因此即使含 # 也应报错。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "第一行 key 为 a，第二行 key 去首尾空白后也为 a，同一 key 出现两次，规范规定抛 ValueError。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.11587,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115214,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115909,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "discovery_strategy": "interaction_focus"
+      },
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "grades": {
+    "direct": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116346,
+      "detail": "all trusted assertion tests completed"
+    },
+    "self_1": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.115992,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_default": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.115588,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_interaction": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116241,
+      "detail": "all trusted assertion tests completed"
+    }
+  },
+  "case_audit": {
+    "verified_default": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115065,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115407,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115383,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    },
+    "verified_interaction": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115733,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.064683,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115059,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    }
+  },
+  "mutants": {
+    "verified_default": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": false
+      }
+    ],
+    "verified_interaction": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": true
+      }
+    ]
+  }
+}

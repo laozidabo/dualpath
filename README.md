@@ -10,7 +10,7 @@ v0.2 no longer describes model guesses with probabilities or risk levels. Instea
 - `dualpath verify`: for Python functions. It independently proposes counterexamples, blind-reviews the expected values, and runs them in an isolated sandbox.
 - `dualpath run`: the legacy dual-path + probability mode. It is kept for compatibility but deprecated, and is planned for removal in v0.3.
 
-The results of the two small experiments are deliberately modest: there is currently no evidence that DualPath or the verification mode beats an ordinary self-check. See the [experiment index](reports/README.md) for the full records.
+The results of the three small experiments are deliberately modest: there is currently no evidence that DualPath or the verification mode beats an ordinary self-check. See the [experiment index](reports/README.md) for the full records.
 
 > Detailed documentation (`docs/*.md`, `reports/*.md`, `CHANGELOG.md`, `CONTRIBUTING.md`) is currently written in Chinese. This page is the English default; the Chinese version is [`README.zh-CN.md`](README.zh-CN.md).
 
@@ -112,16 +112,17 @@ See [docs/VERIFIED.md](docs/VERIFIED.md) for the full flow, budget details, the 
 
 ## Experimental results
 
-Both experiments are small, self-built samples with a single run per task. They neither support claims of general superiority nor yield significance.
+All three experiments are small, self-built samples with a single run per task. They neither support claims of general superiority nor yield significance.
 
 | Experiment | Direct answer | Ordinary self-check | Improved method |
 | --- | ---: | ---: | ---: |
 | Round 1: 30 Python function tasks | 26/30 | 5-round self-review: 28/30 | original DualPath: 28/30 |
 | Round 2: 8 Python function tasks | 7/8 | 1-round self-check: 8/8 | verification mode: 7/8 |
+| Round 3: 8 rule-interaction tasks | 8/8 | 1-round self-check: 8/8 | verification mode 8/8; mutant detection 4/13 → 9/13 |
 
-In round 1, the 5-round self-review and the original DualPath passed exactly the same tasks; DualPath's estimated cost was about 22% higher, and no unique benefit was observed. In round 2, the 1-round self-check passed 8/8; the 3-round self-check passed 6/6 on the six tasks that had results (two were missing due to API errors/truncation), which cannot be compared directly against the 8-task denominator; the verification mode passed 7/8, and the one it missed (V008) was fixed by the 1-round self-check. Neither round provides evidence that DualPath or the verification mode beats an ordinary self-check.
+In round 1, the 5-round self-review and the original DualPath passed exactly the same tasks; DualPath's estimated cost was about 22% higher, and no unique benefit was observed. In round 2, the 1-round self-check passed 8/8; the 3-round self-check passed 6/6 on the six tasks that had results (two were missing due to API errors/truncation), which cannot be compared directly against the 8-task denominator; the verification mode passed 7/8, and the one it missed (V008) was fixed by the 1-round self-check. None of the rounds provides evidence that DualPath or the verification mode beats an ordinary self-check. In round 3 the initial drafts were already correct, so no repair was measured; the only directional signal is counterexample coverage under the same call budget - default discovery caught 4/13 preselected mutants while the rule-interaction option caught 9/13, with one task regressing. See [the round-3 report](reports/interaction-pilot-results.md) for details.
 
-The cumulative conservative ledger across both rounds is CNY 4.74333148, including reservations for failed requests. That is a local estimate, not a provider bill. Raw records, frozen protocols, offline reproduction and per-task analysis are in [reports/README.md](reports/README.md).
+The cumulative conservative ledger across all three rounds is CNY 4.93607448 (round 3: CNY 0.192743 at peak prices, roughly CNY 0.096 at off-peak prices), including reservations for failed requests. That is a local estimate, not a provider bill. Raw records, frozen protocols, offline reproduction and per-task analysis are in [reports/README.md](reports/README.md).
 
 ## Legacy: the deprecated run mode
 
@@ -170,7 +171,7 @@ Contribution rules are in [CONTRIBUTING.md](CONTRIBUTING.md): evidence first, ne
 
 ## Limitations
 
-- Both experiments use self-built tasks, not a public benchmark, and no independent third party wrote the tasks.
+- All three experiments use self-built tasks, not a public benchmark, and no independent third party wrote the tasks.
 - Only a single model and a single sample were tested; there is no cross-model, repeated-run or significance evidence.
 - The coverage of `review` findings is bounded by the model's ability to discover failures; `rule_quote` only guarantees that the quote appears in the material, not that the rule itself is correct or complete.
 - `verify` only covers finite counterexamples and the listed exception types; passing the checks does not mean the implementation is correct overall.
