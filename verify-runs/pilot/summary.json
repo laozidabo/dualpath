@@ -1,0 +1,61 @@
+{
+  "n": 1,
+  "passed": {
+    "direct": 0,
+    "self_1": 0,
+    "self_3": 0,
+    "verified": 0
+  },
+  "verified_statuses": {
+    "unavailable": 1
+  },
+  "incremental_costs": {
+    "direct": {
+      "calls": 1,
+      "incremental_peak_cny": 0.024428,
+      "tokens": 0
+    },
+    "self_1": {
+      "calls": 0,
+      "incremental_peak_cny": 0.0,
+      "tokens": 0
+    },
+    "self_3": {
+      "calls": 0,
+      "incremental_peak_cny": 0.0,
+      "tokens": 0
+    },
+    "verified": {
+      "calls": 0,
+      "incremental_peak_cny": 0.0,
+      "tokens": 0
+    }
+  },
+  "records": [
+    {
+      "id": "V001",
+      "grades": {
+        "direct": {
+          "status": "unavailable",
+          "passed": false
+        },
+        "self_1": {
+          "status": "unavailable",
+          "passed": false
+        },
+        "self_3": {
+          "status": "unavailable",
+          "passed": false
+        },
+        "verified": {
+          "status": "unavailable",
+          "passed": false
+        }
+      },
+      "case_audit": [],
+      "verified_status": "unavailable"
+    }
+  ],
+  "conservative_new_spend_cny": 0.024428,
+  "price_note": "高峰价保守记账；self_1 是 self_3 的中间结果，费用不可重复相加"
+}

@@ -1,0 +1,112 @@
+{
+  "id": "V002",
+  "initial": "```python\nimport urllib.parse\n\n\ndef normalize_segments(path):\n    if not isinstance(path, str) or not path.startswith('/'):\n        raise ValueError(\"path must be a string starting with '/'\")\n\n    raw_segments = path.split('/')\n    segments = []\n    for raw in raw_segments:\n        if raw == '':\n            continue\n\n        out = bytearray()\n        i = 0\n        n = len(raw)\n        while i < n:\n            ch = raw[i]\n            if ch == '%':\n                if i + 2 >= n:\n                    raise ValueError(\"invalid percent-encoding\")\n                h1 = raw[i + 1]\n                h2 = raw[i + 2]\n                if not (h1 in '0123456789abcdefABCDEF' and h2 in '0123456789abcdefABCDEF'):\n                    raise ValueError(\"invalid percent-encoding\")\n                out.append(int(h1 + h2, 16))\n                i += 3\n            else:\n                out.extend(ch.encode('utf-8'))\n                i += 1\n\n        try:\n            decoded = out.decode('utf-8', errors='strict')\n        except UnicodeDecodeError:\n            raise ValueError(\"invalid UTF-8 after percent-decoding\")\n\n        if decoded == '.':\n            continue\n        elif decoded == '..':\n            if not segments:\n                raise ValueError(\"cannot pop from empty segment stack\")\n            segments.pop()\n        else:\n            segments.append(decoded)\n\n    return tuple(segments)\n```",
+  "self_rounds": [
+    {
+      "round": 1,
+      "feedback": "实现已满足任务要求，无需修改。\n\n逐项核对：\n\n- **输入校验**：非字符串或不以 `/` 开头抛 `ValueError`。题目只要求“输入是以 / 开头的字符串，否则抛 ValueError”，对非字符串也抛 `ValueError` 是合理的，未引入额外限制。\n- **按原始 `/` 分段并丢弃空段**：`path.split('/')` 后跳过 `raw == ''`，正确。注意这也会丢弃末尾空段，符合“丢弃原始空段”。\n- **恰好一次百分号解码**：手动扫描，`%` 后必须紧跟两个 ASCII 十六进制字符，否则抛 `ValueError`；`i + 2 >= n` 覆盖了不足两位的情况。只解码一次，`%252e` → `%2e`，正确。\n- **非转义字符按 UTF-8 编码后与转义字节拼接再严格解码**：`out.extend(ch.encode('utf-8'))` 与 `out.append(int(...))` 拼接，最后 `out.decode('utf-8', errors='strict')`，非法 UTF-8 抛 `ValueError`，正确。这也能正确处理跨转义/非转义边界的多字节字符。\n- **`.` 忽略、`..` 弹出、空栈抛错**：逻辑正确。\n- **解码所得 `/` 不再分段**：因为分段在解码前完成，解码后的 `/` 只是段内字符，正确。\n- **`+` 不替换为空格**：未使用 `unquote_plus`，手动解码不处理 `+`，正确。\n- **示例**：`/a/%2F/%252e` → 段 `a`、`/`、`%2e`，返回 `('a', '/', '%2e')`，正确。\n\n边界情况也成立：如 `/%2e%2e` 在空栈时抛错；`/a/../b` → `('b',)`；`/%C3%A9` → `('é',)`；`/%FF` 严格解码失败抛错；`/%`、`/%2`、`/%2G` 均抛错。\n\n唯一可提的非缺陷点：`import urllib.parse` 未被使用，属冗余导入，不影响正确性，可按需删除。",
+      "output": "```python\ndef normalize_segments(path):\n    if not isinstance(path, str) or not path.startswith('/'):\n        raise ValueError(\"path must be a string starting with '/'\")\n\n    raw_segments = path.split('/')\n    segments = []\n    for raw in raw_segments:\n        if raw == '':\n            continue\n\n        out = bytearray()\n        i = 0\n        n = len(raw)\n        while i < n:\n            ch = raw[i]\n            if ch == '%':\n                if i + 2 >= n:\n                    raise ValueError(\"invalid percent-encoding\")\n                h1 = raw[i + 1]\n                h2 = raw[i + 2]\n                if not (h1 in '0123456789abcdefABCDEF' and h2 in '0123456789abcdefABCDEF'):\n                    raise ValueError(\"invalid percent-encoding\")\n                out.append(int(h1 + h2, 16))\n                i += 3\n            else:\n                out.extend(ch.encode('utf-8'))\n                i += 1\n\n        try:\n            decoded = out.decode('utf-8', errors='strict')\n        except UnicodeDecodeError:\n            raise ValueError(\"invalid UTF-8 after percent-decoding\")\n\n        if decoded == '.':\n            continue\n        elif decoded == '..':\n            if not segments:\n                raise ValueError(\"cannot pop from empty segment stack\")\n            segments.pop()\n        else:\n            segments.append(decoded)\n\n    return tuple(segments)\n```"
+    }
+  ],
+  "verified": {
+    "task": "实现 normalize_segments(path)，输入是以 / 开头的字符串，否则抛 ValueError。返回规范化路径段的元组。\n先按原始字符 / 分段，丢弃原始空段；再对每段做恰好一次百分号解码：每个 % 后必须是两个 ASCII 十六进制数字，否则抛 ValueError。非转义字符按 UTF-8 编码，与转义字节拼接后按严格 UTF-8 解码，非法 UTF-8 抛 ValueError。\n解码后恰为 . 的段忽略；恰为 .. 的段弹出一个已保留段，若没有段可弹出则抛 ValueError。其他段按解码结果原样保留。解码所得 / 只是段内字符，不再次分段；+ 是普通加号，不替换为空格。\n例如 normalize_segments('/a/%2F/%252e') == ('a', '/', '%2e')。",
+    "entry_point": "normalize_segments",
+    "initial_output": "```python\nimport urllib.parse\n\n\ndef normalize_segments(path):\n    if not isinstance(path, str) or not path.startswith('/'):\n        raise ValueError(\"path must be a string starting with '/'\")\n\n    raw_segments = path.split('/')\n    segments = []\n    for raw in raw_segments:\n        if raw == '':\n            continue\n\n        out = bytearray()\n        i = 0\n        n = len(raw)\n        while i < n:\n            ch = raw[i]\n            if ch == '%':\n                if i + 2 >= n:\n                    raise ValueError(\"invalid percent-encoding\")\n                h1 = raw[i + 1]\n                h2 = raw[i + 2]\n                if not (h1 in '0123456789abcdefABCDEF' and h2 in '0123456789abcdefABCDEF'):\n                    raise ValueError(\"invalid percent-encoding\")\n                out.append(int(h1 + h2, 16))\n                i += 3\n            else:\n                out.extend(ch.encode('utf-8'))\n                i += 1\n\n        try:\n            decoded = out.decode('utf-8', errors='strict')\n        except UnicodeDecodeError:\n            raise ValueError(\"invalid UTF-8 after percent-decoding\")\n\n        if decoded == '.':\n            continue\n        elif decoded == '..':\n            if not segments:\n                raise ValueError(\"cannot pop from empty segment stack\")\n            segments.pop()\n        else:\n            segments.append(decoded)\n\n    return tuple(segments)\n```",
+    "final_output": "```python\nimport urllib.parse\n\n\ndef normalize_segments(path):\n    if not isinstance(path, str) or not path.startswith('/'):\n        raise ValueError(\"path must be a string starting with '/'\")\n\n    raw_segments = path.split('/')\n    segments = []\n    for raw in raw_segments:\n        if raw == '':\n            continue\n\n        out = bytearray()\n        i = 0\n        n = len(raw)\n        while i < n:\n            ch = raw[i]\n            if ch == '%':\n                if i + 2 >= n:\n                    raise ValueError(\"invalid percent-encoding\")\n                h1 = raw[i + 1]\n                h2 = raw[i + 2]\n                if not (h1 in '0123456789abcdefABCDEF' and h2 in '0123456789abcdefABCDEF'):\n                    raise ValueError(\"invalid percent-encoding\")\n                out.append(int(h1 + h2, 16))\n                i += 3\n            else:\n                out.extend(ch.encode('utf-8'))\n                i += 1\n\n        try:\n            decoded = out.decode('utf-8', errors='strict')\n        except UnicodeDecodeError:\n            raise ValueError(\"invalid UTF-8 after percent-decoding\")\n\n        if decoded == '.':\n            continue\n        elif decoded == '..':\n            if not segments:\n                raise ValueError(\"cannot pop from empty segment stack\")\n            segments.pop()\n        else:\n            segments.append(decoded)\n\n    return tuple(segments)\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "每个 % 后必须是两个 ASCII 十六进制数字，否则抛 ValueError。",
+        "reason": "百分号后不足两位十六进制数字。",
+        "args": "('/a/%2',)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "恰为 .. 的段弹出一个已保留段，若没有段可弹出则抛 ValueError。",
+        "reason": "根路径下 .. 无可弹出段。",
+        "args": "('/..',)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "解码所得 / 只是段内字符，不再次分段；+ 是普通加号，不替换为空格。",
+        "reason": "%2F 解码为段内斜杠，+ 保持加号。",
+        "args": "('/a%2Fb/+c',)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "('a/b', '+c')"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "输入 '/a/%2' 按 / 分段得到 'a' 和 '%2'；'%2' 中 % 后只有一位十六进制数字，不满足必须两位 ASCII 十六进制数字，按规范抛 ValueError。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "输入 '/..' 分段后唯一段为 '..'，解码后恰为 '..'，需弹出一个已保留段；此时没有已保留段，按规范抛 ValueError。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "'/a%2Fb/+c' 分段为 'a%2Fb' 和 '+c'；前者百分号解码得 'a/b'，其中 / 仅为段内字符不再分段；后者 '+' 为普通字符不替换空格，故结果为 ('a/b', '+c')。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115709,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116611,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116138,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "errors": [
+    "RuntimeError"
+  ]
+}

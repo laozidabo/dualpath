@@ -1,0 +1,27 @@
+{
+  "network_calls": 0,
+  "frozen_files_verified": 16,
+  "ledger_call_statuses": {
+    "ok": 15,
+    "error": 1
+  },
+  "conservative_run_cny": 0.122878,
+  "cumulative_conservative_cny": 4.4970064800000005,
+  "records": [
+    {
+      "id": "V001",
+      "requests_reconstructed": 9,
+      "verified_replay_matches": true,
+      "hidden_grades_match": true,
+      "case_audit_matches": true
+    },
+    {
+      "id": "V002",
+      "requests_reconstructed": 7,
+      "verified_replay_matches": true,
+      "hidden_grades_match": true,
+      "case_audit_matches": true
+    }
+  ],
+  "all_checks_passed": true
+}

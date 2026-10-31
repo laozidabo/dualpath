@@ -1,0 +1,167 @@
+{
+  "attempted_tasks": 2,
+  "completed_paired_tasks": 1,
+  "available": {
+    "direct": 2,
+    "self_1": 2,
+    "self_3": 1,
+    "verified": 2
+  },
+  "passed": {
+    "direct": 2,
+    "self_1": 2,
+    "self_3": 1,
+    "verified": 2
+  },
+  "verified_statuses": {
+    "checks_passed": 2
+  },
+  "incremental_costs": {
+    "direct": {
+      "calls": 2,
+      "incremental_peak_cny": 0.005914,
+      "tokens": 1079
+    },
+    "self_1": {
+      "calls": 4,
+      "incremental_peak_cny": 0.023974,
+      "tokens": 5978
+    },
+    "self_3": {
+      "calls": 10,
+      "incremental_peak_cny": 0.10696,
+      "tokens": 16631
+    },
+    "verified": {
+      "calls": 4,
+      "incremental_peak_cny": 0.010004,
+      "tokens": 2746
+    }
+  },
+  "records": [
+    {
+      "id": "V001",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116123,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_1": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.115864,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_3": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116263,
+          "detail": "all trusted assertion tests completed"
+        },
+        "verified": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116083,
+          "detail": "all trusted assertion tests completed"
+        }
+      },
+      "case_audit": [
+        {
+          "id": "C1",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115669,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115132,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115806,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ],
+      "verified_status": "checks_passed"
+    },
+    {
+      "id": "V002",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116623,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_1": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.11612,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_3": {
+          "status": "unavailable",
+          "passed": false
+        },
+        "verified": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.11678,
+          "detail": "all trusted assertion tests completed"
+        }
+      },
+      "case_audit": [
+        {
+          "id": "C1",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.11537,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115653,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115025,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ],
+      "verified_status": "checks_passed"
+    }
+  ],
+  "conservative_new_spend_cny": 0.122878,
+  "price_note": "高峰价保守记账；self_1 是 self_3 的中间结果，费用不可重复相加"
+}

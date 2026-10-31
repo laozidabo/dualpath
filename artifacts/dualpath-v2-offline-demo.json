@@ -1,0 +1,211 @@
+{
+  "mode": "scripted_offline_no_api",
+  "records": [
+    {
+      "scenario": "修正成功",
+      "result": {
+        "task": "实现 abs_value(x)，x 是整数。返回整数的绝对值。",
+        "entry_point": "abs_value",
+        "initial_output": "def abs_value(x): return x",
+        "final_output": "def abs_value(x): return abs(x)",
+        "status": "repaired",
+        "cases": [
+          {
+            "id": "C1",
+            "rule": "返回整数的绝对值",
+            "reason": "检查正负输入",
+            "args": "(-2,)",
+            "kwargs": "{}",
+            "expect": {
+              "kind": "return",
+              "value": "2"
+            }
+          },
+          {
+            "id": "C2",
+            "rule": "返回整数的绝对值",
+            "reason": "检查正负输入",
+            "args": "(5,)",
+            "kwargs": "{}",
+            "expect": {
+              "kind": "return",
+              "value": "5"
+            }
+          }
+        ],
+        "decisions": [
+          {
+            "id": "C1",
+            "verdict": "accept",
+            "reason": "按整数绝对值规则直接计算"
+          },
+          {
+            "id": "C2",
+            "verdict": "accept",
+            "reason": "按整数绝对值规则直接计算"
+          }
+        ],
+        "initial_checks": [
+          {
+            "id": "C1",
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.065308,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert _dp_actual == _dp_expected, ('unexpected result', repr(_dp_actual)[:1000], repr(_dp_expected)[:1000])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('unexpected result', '-2', '2')\n"
+          },
+          {
+            "id": "C2",
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115302,
+            "detail": "all trusted assertion tests completed"
+          }
+        ],
+        "repaired_checks": [
+          {
+            "id": "C1",
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115939,
+            "detail": "all trusted assertion tests completed"
+          },
+          {
+            "id": "C2",
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115782,
+            "detail": "all trusted assertion tests completed"
+          }
+        ],
+        "attempted_repair": "def abs_value(x): return abs(x)",
+        "events": [
+          {
+            "call": 1,
+            "stage": "[VERIFY_DIRECT]",
+            "finish_reason": "unknown"
+          },
+          {
+            "call": 2,
+            "stage": "[VERIFY_DISCOVER]",
+            "finish_reason": "unknown"
+          },
+          {
+            "call": 3,
+            "stage": "[VERIFY_REVIEW]",
+            "finish_reason": "unknown"
+          },
+          {
+            "call": 4,
+            "stage": "[VERIFY_REPAIR]",
+            "finish_reason": "unknown"
+          }
+        ],
+        "model_calls": 4,
+        "expectation_assurance": "model_reviewed_not_proven"
+      }
+    },
+    {
+      "scenario": "退步回退",
+      "result": {
+        "task": "实现 abs_value(x)，x 是整数。返回整数的绝对值。",
+        "entry_point": "abs_value",
+        "initial_output": "def abs_value(x): return x",
+        "final_output": "def abs_value(x): return x",
+        "status": "repair_rejected",
+        "cases": [
+          {
+            "id": "C1",
+            "rule": "返回整数的绝对值",
+            "reason": "检查正负输入",
+            "args": "(-2,)",
+            "kwargs": "{}",
+            "expect": {
+              "kind": "return",
+              "value": "2"
+            }
+          },
+          {
+            "id": "C2",
+            "rule": "返回整数的绝对值",
+            "reason": "检查正负输入",
+            "args": "(5,)",
+            "kwargs": "{}",
+            "expect": {
+              "kind": "return",
+              "value": "5"
+            }
+          }
+        ],
+        "decisions": [
+          {
+            "id": "C1",
+            "verdict": "accept",
+            "reason": "按整数绝对值规则直接计算"
+          },
+          {
+            "id": "C2",
+            "verdict": "accept",
+            "reason": "按整数绝对值规则直接计算"
+          }
+        ],
+        "initial_checks": [
+          {
+            "id": "C1",
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.115745,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert _dp_actual == _dp_expected, ('unexpected result', repr(_dp_actual)[:1000], repr(_dp_expected)[:1000])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('unexpected result', '-2', '2')\n"
+          },
+          {
+            "id": "C2",
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.116018,
+            "detail": "all trusted assertion tests completed"
+          }
+        ],
+        "repaired_checks": [
+          {
+            "id": "C1",
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115788,
+            "detail": "all trusted assertion tests completed"
+          },
+          {
+            "id": "C2",
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.115733,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert _dp_actual == _dp_expected, ('unexpected result', repr(_dp_actual)[:1000], repr(_dp_expected)[:1000])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('unexpected result', '-5', '5')\n"
+          }
+        ],
+        "attempted_repair": "def abs_value(x): return -x",
+        "events": [
+          {
+            "call": 1,
+            "stage": "[VERIFY_DIRECT]",
+            "finish_reason": "unknown"
+          },
+          {
+            "call": 2,
+            "stage": "[VERIFY_DISCOVER]",
+            "finish_reason": "unknown"
+          },
+          {
+            "call": 3,
+            "stage": "[VERIFY_REVIEW]",
+            "finish_reason": "unknown"
+          },
+          {
+            "call": 4,
+            "stage": "[VERIFY_REPAIR]",
+            "finish_reason": "unknown"
+          }
+        ],
+        "model_calls": 4,
+        "expectation_assurance": "model_reviewed_not_proven"
+      }
+    }
+  ]
+}

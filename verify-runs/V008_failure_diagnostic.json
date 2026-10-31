@@ -1,0 +1,26 @@
+{
+  "purpose": "事后解释已出现的失败，不参与在线修复或主评分",
+  "source": "V008 第一轮自检反馈中已给出的反例",
+  "input": "[(0, 5, True, True), (0, 3, False, True)]",
+  "expected": "[(0, 5, True, True)]",
+  "checks": {
+    "direct": {
+      "status": "fail",
+      "passed": false,
+      "duration_seconds": 0.077542,
+      "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 1, in <module>\n    assert union_intervals([(0, 5, True, True), (0, 3, False, True)]) == [(0, 5, True, True)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+    },
+    "self_1": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.064531,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified": {
+      "status": "fail",
+      "passed": false,
+      "duration_seconds": 0.064667,
+      "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 1, in <module>\n    assert union_intervals([(0, 5, True, True), (0, 3, False, True)]) == [(0, 5, True, True)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+    }
+  }
+}

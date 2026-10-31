@@ -39,6 +39,13 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--json", dest="json_path", help="把完整执行记录保存为 JSON")
     run.add_argument("--markdown", dest="markdown_path", help="把完整执行记录保存为 Markdown")
     run.add_argument("--quiet", action="store_true", help="隐藏过程信息，只输出最终结果")
+    verify = subparsers.add_parser("verify", help="用独立反例验证一个 Python 函数（实验模式）")
+    verify.add_argument("task", help="完整函数规范")
+    verify.add_argument("--function", required=True, help="需要实现的公开函数名")
+    verify.add_argument("--budget", type=float, required=True, help="本次目录内累计保守费用上限，人民币元")
+    verify.add_argument("--output", required=True, help="新的记录目录；避免覆盖此前结果")
+    verify.add_argument("--max-cases", type=int, default=3, choices=range(1, 6))
+    verify.add_argument("--interaction-focus", action="store_true", help="优先发现多条规则共同作用的反例")
     return parser
 
 
@@ -95,3 +102,30 @@ def main() -> None:
             asyncio.run(run_task(args, parser))
         except KeyboardInterrupt:
             parser.exit(130, "\n执行已取消。\n")
+    elif args.command == "verify":
+        from .budgeted import BudgetedDeepSeek, Ledger, units
+        from .sandbox import extract_code, sandbox_support
+        from .verification import VerifiedDualPath
+
+        key = os.getenv("DEEPSEEK_API_KEY")
+        if not key:
+            parser.error("请在本机设置 DEEPSEEK_API_KEY；不要将密钥写入命令行参数")
+        if not sandbox_support()["supported"]:
+            parser.error("验证模式需要 Linux、bubblewrap 和可用的用户命名空间")
+        try:
+            units(args.budget)
+            output = Path(args.output).expanduser()
+            output.mkdir(parents=True, exist_ok=False)
+            with Ledger(output / "ledger.json", args.budget) as ledger:
+                engine = VerifiedDualPath(BudgetedDeepSeek(key, ledger), max_cases=args.max_cases, interaction_focus=args.interaction_focus)
+                result = asyncio.run(engine.run(args.task, args.function))
+                save_text(str(output / "result.json"), json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+                save_text(str(output / "solution.py"), extract_code(result.final_output))
+                print(f"状态：{result.status}；保守记账：{ledger.spent_units / 1_000_000:.6f} 元")
+                print(result.final_output)
+                if result.status not in {"checks_passed", "repaired"}:
+                    parser.exit(2, "验证未完成或未通过；已有初稿保存在结果中。\n")
+        except KeyboardInterrupt:
+            parser.exit(130, "\n执行已取消；未确认请求的预算预留额已保留。\n")
+        except (ValueError, OSError) as error:
+            parser.exit(2, "无法启动验证：" + type(error).__name__ + "\n")

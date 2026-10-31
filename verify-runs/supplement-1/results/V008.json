@@ -1,0 +1,117 @@
+{
+  "id": "V008",
+  "initial": "```python\ndef union_intervals(intervals):\n    # Normalize each interval into a list of (lo, hi, left_closed, right_closed)\n    # Ignore empty intervals.\n    norm = []\n    for lo, hi, lc, rc in intervals:\n        if lo == hi:\n            if lc and rc:\n                norm.append((lo, hi, True, True))\n            # else empty, ignore\n        else:\n            norm.append((lo, hi, lc, rc))\n\n    if not norm:\n        return []\n\n    # Sort by lo, then by hi, then prefer closed left first (doesn't matter much)\n    norm.sort(key=lambda x: (x[0], x[1], not x[2]))\n\n    result = []\n    cur_lo, cur_hi, cur_lc, cur_rc = norm[0]\n\n    for lo, hi, lc, rc in norm[1:]:\n        # Determine if current interval can be merged with the next one.\n        # They can merge if:\n        # - lo < cur_hi (overlap)\n        # - lo == cur_hi and (cur_rc or lc) (touching with at least one closed)\n        can_merge = False\n        if lo < cur_hi:\n            can_merge = True\n        elif lo == cur_hi:\n            if cur_rc or lc:\n                can_merge = True\n\n        if can_merge:\n            # Merge: new hi is max of cur_hi and hi\n            if hi > cur_hi:\n                cur_hi = hi\n                cur_rc = rc\n            elif hi == cur_hi:\n                # If equal, right closed if either is closed\n                cur_rc = cur_rc or rc\n            # left endpoint stays cur_lo, cur_lc\n        else:\n            result.append((cur_lo, cur_hi, cur_lc, cur_rc))\n            cur_lo, cur_hi, cur_lc, cur_rc = lo, hi, lc, rc\n\n    result.append((cur_lo, cur_hi, cur_lc, cur_rc))\n    return result\n```",
+  "self_rounds": [
+    {
+      "round": 1,
+      "feedback": "检查实现，发现一个关键错误：合并时左端点处理不正确。\n\n**问题：** 当新区间 `lo < cur_lo` 时（虽然排序后通常不会发生，但排序键是 `(lo, hi, not lc)`，所以 `lo` 相同的区间会按 `hi` 排序，`lo` 不会更小），更实际的问题是：合并时左端点固定为 `cur_lo, cur_lc`，这是对的，因为排序保证 `lo >= cur_lo`。但**当 `lo == cur_lo` 时**，左闭状态应取并集（`cur_lc or lc`），而代码没有处理。\n\n不过由于排序后 `lo == cur_lo` 的区间会连续出现，且第一个的 `lc` 未必是\"最开\"的。例如：\n- `(0, 5, False, True)` 和 `(0, 3, True, True)`：排序后 `(0,3,True,True)` 在前（`hi` 小），`(0,5,False,True)` 在后。合并时 `cur_lc=True`，但实际并集左端点是 `0`，`(0,5,False,True)` 不含 0，而 `(0,3,True,True)` 含 0，所以并集含 0，`cur_lc=True` 正确。\n- 反过来 `(0, 5, True, True)` 和 `(0, 3, False, True)`：排序后 `(0,3,False,True)` 在前，`cur_lc=False`；合并 `(0,5,True,True)` 时左端点应含 0（因为后者含 0），但代码保持 `cur_lc=False`，**错误**。\n\n**反例：**\n```python\nunion_intervals([(0, 5, True, True), (0, 3, False, True)])\n```\n排序后：`[(0,3,False,True), (0,5,True,True)]`。合并时 `lo=0 == cur_lo`，`lo < cur_hi`（0<3）成立，合并，`hi=5>3`，更新 `cur_hi=5, cur_rc=True`，但 `cur_lc` 仍为 `False`。结果 `(0,5,False,True)`，丢失了点 0。正确应为 `(0,5,True,True)`。\n\n**修复：** 合并时左闭状态取 `cur_lc or lc`（因为 `lo >= cur_lo`，若 `lo == cur_lo` 需并集；若 `lo > cur_lo` 则 `cur_lc` 不变，`or` 也无害，因为此时 `lc` 对应更右的点，但 `cur_lc` 已决定左端点，`or` 会错误地把左端点变闭——所以必须仅在 `lo == cur_lo` 时取 `or`）。\n\n更稳妥：合并时\n```python\nif lo == cur_lo:\n    cur_lc = cur_lc or lc\n```\n（`lo > cur_lo` 时保持 `cur_lc`。）\n\n**另一个边界：** 单点区间填补接点。例如 `[(0,1,True,False),(1,1,True,True),(1,2,False,True)]`。排序后 `(0,1,True,False)`, `(1,1,True,True)`, `(1,2,False,True)`。第一个与单点：`lo=1==cur_hi=1`，`cur_rc=False or lc=True` → 合并，`hi=1==cur_hi`，`cur_rc = False or True = True`。再与 `(1,2,False,True)`：`lo=1==cur_hi=1`，`cur_rc=True or lc=False` → 合并，`hi=2>1`，`cur_hi=2, cur_rc=True`。结果 `(0,2,True,True)`，正确。\n\n**空区间处理：** `lo==hi` 且非双闭时忽略，正确。`lo<hi` 时即使 `lc=rc=False` 也是非空开区间，保留，正确。\n\n**不修改输入：** 只读 `intervals`，`norm` 是新列表，`sort` 作用于 `norm`，正确。\n\n**排序键：** `(x[0], x[1], not x[2])` 使同 `lo` 时 `hi` 小的在前，`lc=True` 在前。对合并逻辑无碍（除上述左闭 bug）。\n\n**结论：** 需修复合并时左闭状态。修改 `can_merge` 分支内：\n\n```python\nif can_merge:\n    if lo == cur_lo:\n        cur_lc = cur_lc or lc\n    if hi > cur_hi:\n        cur_hi = hi\n        cur_rc = rc\n    elif hi == cur_hi:\n        cur_rc = cur_rc or rc\n```\n\n其余逻辑正确。",
+      "output": "```python\ndef union_intervals(intervals):\n    # Normalize each interval into a list of (lo, hi, left_closed, right_closed)\n    # Ignore empty intervals.\n    norm = []\n    for lo, hi, lc, rc in intervals:\n        if lo == hi:\n            if lc and rc:\n                norm.append((lo, hi, True, True))\n            # else empty, ignore\n        else:\n            norm.append((lo, hi, lc, rc))\n\n    if not norm:\n        return []\n\n    # Sort by lo, then by hi, then prefer closed left first\n    norm.sort(key=lambda x: (x[0], x[1], not x[2]))\n\n    result = []\n    cur_lo, cur_hi, cur_lc, cur_rc = norm[0]\n\n    for lo, hi, lc, rc in norm[1:]:\n        # Determine if current interval can be merged with the next one.\n        can_merge = False\n        if lo < cur_hi:\n            can_merge = True\n        elif lo == cur_hi:\n            if cur_rc or lc:\n                can_merge = True\n\n        if can_merge:\n            # Merge: left endpoint stays cur_lo; if same lo, left-closed is union\n            if lo == cur_lo:\n                cur_lc = cur_lc or lc\n            # new hi is max of cur_hi and hi\n            if hi > cur_hi:\n                cur_hi = hi\n                cur_rc = rc\n            elif hi == cur_hi:\n                # If equal, right closed if either is closed\n                cur_rc = cur_rc or rc\n        else:\n            result.append((cur_lo, cur_hi, cur_lc, cur_rc))\n            cur_lo, cur_hi, cur_lc, cur_rc = lo, hi, lc, rc\n\n    result.append((cur_lo, cur_hi, cur_lc, cur_rc))\n    return result\n```"
+    },
+    {
+      "round": 2,
+      "feedback": "检查实现，逐项对照要求：\n\n**1. 空区间处理（lo == hi）**\n- 仅当 `lc and rc` 时保留为单点，否则忽略。✅ 正确。\n\n**2. 不修改输入**\n- 只读取元组并构建新列表 `norm`，排序的是新列表。✅ 正确。\n\n**3. 排序**\n- 按 `(lo, hi, not lc)` 排序。左端点升序，符合输出要求。✅\n\n**4. 合并判定**\n- `lo < cur_hi`：重叠，合并。✅\n- `lo == cur_hi`：`cur_rc or lc` 才合并。✅ 符合“至少一方包含接点”。\n- `lo > cur_hi`：不合并。✅\n\n**5. 合并后端点更新**\n- 左端点：`cur_lo` 保持不变（因为已排序，`lo >= cur_lo`）。当 `lo == cur_lo` 时 `cur_lc = cur_lc or lc`。✅\n- 右端点：`hi > cur_hi` 时更新 `cur_hi` 和 `cur_rc`；`hi == cur_hi` 时 `cur_rc = cur_rc or rc`。✅\n\n**6. 单点填补接点**\n- 单点区间 `(x,x,True,True)` 与 `(a,x,...,False)` 相接时，`lo == cur_hi` 且 `lc=True`，可合并。✅\n\n**7. 输出格式**\n- 返回 `(lo, hi, lc, rc)` 元组列表，按左端点升序。✅\n\n**潜在问题排查：**\n\n- **排序键 `not x[2]`**：`True` 排在 `False` 前，即左闭优先。这影响 `lo == cur_lo` 时 `cur_lc` 的初值，但后续 `cur_lc = cur_lc or lc` 会修正，无实质影响。✅\n\n- **`lo == cur_lo` 但 `lo < cur_hi` 的合并**：例如 `(0,5,False,False)` 与 `(0,3,True,True)`。排序后 `(0,3,True,True)` 在前（`hi` 小），`cur=(0,3,True,True)`，下一个 `(0,5,False,False)`：`lo=0 < cur_hi=3` 合并，`lo==cur_lo` 使 `cur_lc=True`，`hi=5>3` 更新 `cur_hi=5, cur_rc=False`。结果 `(0,5,True,False)`。正确：并集是 `[0,5)`。✅\n\n- **`lo == cur_lo` 且 `hi == cur_hi`**：`cur_lc` 和 `cur_rc` 都做 or。✅\n\n- **`lo == cur_lo` 且 `hi < cur_hi`**：不会发生，因为排序保证 `hi` 升序（同 `lo` 时）。✅\n\n- **`lo < cur_hi` 但 `lo == cur_lo` 且 `hi < cur_hi`**：排序保证同 `lo` 时 `hi` 非降，故不会。✅\n\n- **合并后 `cur_lo` 是否需要更新**：由于排序，`lo >= cur_lo`，无需更新。✅\n\n- **`lo == cur_hi` 且 `hi == cur_hi`**：即单点 `(x,x)` 与 `(cur_lo,x,...)` 相接。`can_merge` 由 `cur_rc or lc` 决定；合并后 `hi == cur_hi` 使 `cur_rc = cur_rc or rc`（`rc=True`）。✅\n\n- **`lo == cur_hi` 且 `hi > cur_hi`**：合并，`cur_hi=hi, cur_rc=rc`。✅\n\n- **`lo == cur_hi` 且 `hi < cur_hi`**：不可能，因为 `lo == cur_hi` 意味着 `lo >= cur_hi`，而 `hi >= lo`，故 `hi >= cur_hi`。✅\n\n**边界：输入为空列表** → `norm` 为空，返回 `[]`。✅\n\n**边界：全部为空区间** → 返回 `[]`。✅\n\n**边界：单点与单点相接**：`(0,0,T,T)` 与 `(0,0,T,T)` 排序后合并，`lo==cur_hi==0`，`cur_rc or lc=True`，合并，`hi==cur_hi` 使 `cur_rc=True`。结果 `(0,0,T,T)`。✅\n\n**边界：开区间端点相接不合并**：`(0,1,F,F)` 与 `(1,2,F,F)`：`lo==cur_hi=1`，`cur_rc=False, lc=False`，不合并。✅ 正确。\n\n**边界：`(0,1,F,T)` 与 `(1,2,F,F)`**：`cur_rc=True`，合并为 `(0,2,F,F)`。✅\n\n**边界：`(0,1,F,F)` 与 `(1,2,T,F)`**：`lc=True`，合并为 `(0,2,F,F)`。✅ 与题目示例一致。\n\n**一个需注意的点：** 排序键 `(x[0], x[1], not x[2])` 中 `x[1]` 升序。考虑 `(0,2,F,F)` 与 `(0,1,T,T)`：排序后 `(0,1,T,T)` 在前。合并：`lo=0 < cur_hi=1`，`lo==cur_lo` 使 `cur_lc=True`，`hi=2>1` 更新 `cur_hi=2, cur_rc=False`。结果 `(0,2,T,F)`。并集：`[0,1] ∪ (0,2) = [0,2)`。✅\n\n**再检查一个易错情形：** `(0,1,T,T)` 与 `(1,1,T,T)` 与 `(1,2,F,F)`。\n- 排序：`(0,1,T,T)`, `(1,1,T,T)`, `(1,2,F,F)`（同 lo=1 时 hi 升序）。\n- cur=`(0,1,T,T)`；下一个 `(1,1,T,T)`：`lo==cur_hi=1`，`cur_rc=True` → 合并，`hi==cur_hi` → `cur_rc=True`。cur=`(0,1,T,T)`。\n- 下一个 `(1,2,F,F)`：`lo==cur_hi=1`，`cur_rc=True` → 合并，`hi=2>1` → `cur_hi=2, cur_rc=False`。结果 `(0,2,T,F)`。\n- 并集：`[0,1] ∪ {1} ∪ (1,2) = [0,2)`。✅\n\n**结论：** 实现正确覆盖了所有明确要求与边界情况，无需修改。",
+      "output": "```python\ndef union_intervals(intervals):\n    norm = []\n    for lo, hi, lc, rc in intervals:\n        if lo == hi:\n            if lc and rc:\n                norm.append((lo, hi, True, True))\n        else:\n            norm.append((lo, hi, lc, rc))\n\n    if not norm:\n        return []\n\n    norm.sort(key=lambda x: (x[0], x[1], not x[2]))\n\n    result = []\n    cur_lo, cur_hi, cur_lc, cur_rc = norm[0]\n\n    for lo, hi, lc, rc in norm[1:]:\n        can_merge = False\n        if lo < cur_hi:\n            can_merge = True\n        elif lo == cur_hi:\n            if cur_rc or lc:\n                can_merge = True\n\n        if can_merge:\n            if lo == cur_lo:\n                cur_lc = cur_lc or lc\n            if hi > cur_hi:\n                cur_hi = hi\n                cur_rc = rc\n            elif hi == cur_hi:\n                cur_rc = cur_rc or rc\n        else:\n            result.append((cur_lo, cur_hi, cur_lc, cur_rc))\n            cur_lo, cur_hi, cur_lc, cur_rc = lo, hi, lc, rc\n\n    result.append((cur_lo, cur_hi, cur_lc, cur_rc))\n    return result\n```"
+    }
+  ],
+  "verified": {
+    "task": "实现 union_intervals(intervals)，返回实数轴上区间并集的规范表示。输入是 (lo, hi, left_closed, right_closed) 元组列表，lo/hi 是 -10 到 10 的整数且 lo <= hi，两个 closed 字段为布尔值。不得修改输入。\n端点是否包含由 closed 标记决定；lo == hi 时仅两端均闭才表示单点，否则是空区间，应忽略。\n输出按左端点升序排列的元组列表，覆盖与输入恰好相同的实数点，并将能连成一个区间的部分最大限度合并。两个区间端点相接时，至少其中一方包含接点才可合并；双方均不包含接点则不能合并。单点区间也可以填补该接点。\n例如 [(0,1,False,False),(1,2,True,False)] 合并为 [(0,2,False,False)]。",
+    "entry_point": "union_intervals",
+    "initial_output": "```python\ndef union_intervals(intervals):\n    # Normalize each interval into a list of (lo, hi, left_closed, right_closed)\n    # Ignore empty intervals.\n    norm = []\n    for lo, hi, lc, rc in intervals:\n        if lo == hi:\n            if lc and rc:\n                norm.append((lo, hi, True, True))\n            # else empty, ignore\n        else:\n            norm.append((lo, hi, lc, rc))\n\n    if not norm:\n        return []\n\n    # Sort by lo, then by hi, then prefer closed left first (doesn't matter much)\n    norm.sort(key=lambda x: (x[0], x[1], not x[2]))\n\n    result = []\n    cur_lo, cur_hi, cur_lc, cur_rc = norm[0]\n\n    for lo, hi, lc, rc in norm[1:]:\n        # Determine if current interval can be merged with the next one.\n        # They can merge if:\n        # - lo < cur_hi (overlap)\n        # - lo == cur_hi and (cur_rc or lc) (touching with at least one closed)\n        can_merge = False\n        if lo < cur_hi:\n            can_merge = True\n        elif lo == cur_hi:\n            if cur_rc or lc:\n                can_merge = True\n\n        if can_merge:\n            # Merge: new hi is max of cur_hi and hi\n            if hi > cur_hi:\n                cur_hi = hi\n                cur_rc = rc\n            elif hi == cur_hi:\n                # If equal, right closed if either is closed\n                cur_rc = cur_rc or rc\n            # left endpoint stays cur_lo, cur_lc\n        else:\n            result.append((cur_lo, cur_hi, cur_lc, cur_rc))\n            cur_lo, cur_hi, cur_lc, cur_rc = lo, hi, lc, rc\n\n    result.append((cur_lo, cur_hi, cur_lc, cur_rc))\n    return result\n```",
+    "final_output": "```python\ndef union_intervals(intervals):\n    # Normalize each interval into a list of (lo, hi, left_closed, right_closed)\n    # Ignore empty intervals.\n    norm = []\n    for lo, hi, lc, rc in intervals:\n        if lo == hi:\n            if lc and rc:\n                norm.append((lo, hi, True, True))\n            # else empty, ignore\n        else:\n            norm.append((lo, hi, lc, rc))\n\n    if not norm:\n        return []\n\n    # Sort by lo, then by hi, then prefer closed left first (doesn't matter much)\n    norm.sort(key=lambda x: (x[0], x[1], not x[2]))\n\n    result = []\n    cur_lo, cur_hi, cur_lc, cur_rc = norm[0]\n\n    for lo, hi, lc, rc in norm[1:]:\n        # Determine if current interval can be merged with the next one.\n        # They can merge if:\n        # - lo < cur_hi (overlap)\n        # - lo == cur_hi and (cur_rc or lc) (touching with at least one closed)\n        can_merge = False\n        if lo < cur_hi:\n            can_merge = True\n        elif lo == cur_hi:\n            if cur_rc or lc:\n                can_merge = True\n\n        if can_merge:\n            # Merge: new hi is max of cur_hi and hi\n            if hi > cur_hi:\n                cur_hi = hi\n                cur_rc = rc\n            elif hi == cur_hi:\n                # If equal, right closed if either is closed\n                cur_rc = cur_rc or rc\n            # left endpoint stays cur_lo, cur_lc\n        else:\n            result.append((cur_lo, cur_hi, cur_lc, cur_rc))\n            cur_lo, cur_hi, cur_lc, cur_rc = lo, hi, lc, rc\n\n    result.append((cur_lo, cur_hi, cur_lc, cur_rc))\n    return result\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "lo == hi 时仅两端均闭才表示单点，否则是空区间，应忽略。",
+        "reason": "lo==hi 且两端均闭，表示单点，应保留为单点区间。",
+        "args": "([(3, 3, True, True)],)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "[(3, 3, True, True)]"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "lo == hi 时仅两端均闭才表示单点，否则是空区间，应忽略。",
+        "reason": "lo==hi 但仅一端闭，是空区间，应忽略，结果为空列表。",
+        "args": "([(3, 3, True, False)],)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "[]"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "两个区间端点相接时，至少其中一方包含接点才可合并；双方均不包含接点则不能合并。",
+        "reason": "两区间在1处相接但双方均不包含接点，不能合并。",
+        "args": "([(0, 1, True, False), (1, 2, False, True)],)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "[(0, 1, True, False), (1, 2, False, True)]"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "lo==hi 且两端均闭，按规范表示单点区间，应保留为 [(3,3,True,True)]。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "lo==hi 但仅一端闭，按规范是空区间，应忽略，结果为空列表。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "两区间在 1 处相接，但左区间右端不闭、右区间左端不闭，双方均不含接点，不能合并，保持两个区间。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115913,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116275,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115825,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "errors": [
+    "RuntimeError"
+  ]
+}

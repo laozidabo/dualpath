@@ -1,0 +1,146 @@
+[
+  {
+    "id": "V001",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.155379,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.118513,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 5, in <module>\n    assert split_record(' a ;\" x \";\\n') == [' a ', ' x ', '\\n']\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "V002",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116611,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.115667,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert normalize_segments(path) == expected, path\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: /a/%2F/%252e\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "V003",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116761,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116903,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 1, in <module>\n    assert allocate(-2,[1,1,1]) == [-1,-1,0]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "V004",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116383,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116625,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 5, in <module>\n    assert apply_transfers(b,events) == ({'a':0,'b':4}, ['rejected','duplicate','applied','rejected','applied','applied','rejected','rejected','duplicate'])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "V005",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.117161,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116989,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert path_match('*','\\n') and path_match('?','\\n') and path_match('**','a/\\nb')\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "V006",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116395,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116238,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 3, in <module>\n    for j,b in enumerate(ordered): assert compare_versions(a,b) == (i>j)-(i<j)\n                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "V007",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.117151,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.118603,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert weighted_quantile([(4,1),(2,1)],1,2) == 2\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "V008",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.117947,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.117297,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert union_intervals([(0,1,False,False),(1,2,True,False)]) == [(0,2,False,False)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  }
+]

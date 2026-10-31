@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "model": "deepseek-flash",
+  "price_date": "2026-10-31",
+  "limit_units": 5000000,
+  "halted": false,
+  "calls": [
+    {
+      "number": 1,
+      "group": "V001/direct",
+      "started_at": "2026-10-31T02:56:51.295777+00:00",
+      "status": "error",
+      "request": {
+        "model": "deepseek-flash",
+        "messages": [
+          {
+            "role": "system",
+            "content": "[VERIFY_DIRECT]\n实现用户给定的 Python 函数，只使用标准库。严格遵守题目，不补充未规定的规则。\n只交付一个完整 Python 代码块，包含必要导入，不执行演示、不读标准输入。"
+          },
+          {
+            "role": "user",
+            "content": "实现 split_record(s)。s 是一个字符串，表示用分号分隔的一条记录；换行也只是普通字符，不表示记录结束。返回字段字符串列表。\n空输入返回 ['']；连续或末尾分号产生空字段。所有空白原样保留。\n字段可以不加引号，也可以从字段的第一个字符开始用双引号包围。不加引号的字段不能含双引号。\n加引号的字段内部允许分号；两个连续双引号代表一个字面双引号；结束双引号后必须紧接分号或输入结束，不能有空格。未闭合引号或其他违反这些规则的输入均抛 ValueError。\n例如 split_record('a;\"b;c\";') == ['a', 'b;c', '']。"
+          }
+        ],
+        "temperature": 0.2,
+        "thinking": {
+          "type": "disabled"
+        },
+        "max_tokens": 2048,
+        "stream": false
+      },
+      "reserved_units": 24428,
+      "error_type": "HTTPError",
+      "elapsed_seconds": 0.985
+    }
+  ]
+}

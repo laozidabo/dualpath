@@ -1,0 +1,815 @@
+{
+  "interpretation": "探索性合并；保留 V002 中断缺失；补充批次不替换原批次",
+  "api_calls_for_this_analysis": 0,
+  "batches": [
+    {
+      "name": "pilot-2",
+      "attempted": 2,
+      "completed_paired": 1
+    },
+    {
+      "name": "supplement-1",
+      "attempted": 6,
+      "completed_paired": 5
+    }
+  ],
+  "attempted_tasks": 8,
+  "complete_all_arm_pairs": 6,
+  "available": {
+    "direct": 8,
+    "self_1": 8,
+    "self_3": 6,
+    "verified": 8
+  },
+  "passed": {
+    "direct": 7,
+    "self_1": 8,
+    "self_3": 6,
+    "verified": 7
+  },
+  "complete_pair_passed": {
+    "direct": 6,
+    "self_1": 6,
+    "self_3": 6,
+    "verified": 6
+  },
+  "comparisons_vs_direct": {
+    "self_1": {
+      "paired_n": 8,
+      "repairs": 1,
+      "regressions": 0
+    },
+    "self_3": {
+      "paired_n": 6,
+      "repairs": 0,
+      "regressions": 0
+    },
+    "verified": {
+      "paired_n": 8,
+      "repairs": 0,
+      "regressions": 0
+    }
+  },
+  "verified_statuses": {
+    "checks_passed": 8
+  },
+  "counterexample_reference_audit": {
+    "generated": 24,
+    "accept": 24,
+    "reference_agrees": 24
+  },
+  "preselected_mutants_caught": 4,
+  "preselected_mutants_total": 8,
+  "mutant_checks": [
+    {
+      "id": "V001",
+      "mutant": "单规则偏差",
+      "accepted_cases": 3,
+      "caught": false,
+      "checks": [
+        {
+          "id": "C1",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.14687,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C2",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.115292,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C3",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116234,
+          "detail": "all trusted assertion tests completed"
+        }
+      ]
+    },
+    {
+      "id": "V002",
+      "mutant": "单规则偏差",
+      "accepted_cases": 3,
+      "caught": true,
+      "checks": [
+        {
+          "id": "C1",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.11517,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C2",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.115039,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C3",
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.115155,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert _dp_actual == _dp_expected, ('unexpected result', repr(_dp_actual)[:1000], repr(_dp_expected)[:1000])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('unexpected result', \"('a', 'b', '+c')\", \"('a/b', '+c')\")\n"
+        }
+      ]
+    },
+    {
+      "id": "V003",
+      "mutant": "单规则偏差",
+      "accepted_cases": 3,
+      "caught": true,
+      "checks": [
+        {
+          "id": "C1",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.115694,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C2",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.115011,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C3",
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.115126,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert _dp_actual == _dp_expected, ('unexpected result', repr(_dp_actual)[:1000], repr(_dp_expected)[:1000])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('unexpected result', '[0, 0, 1]', '[1, 0, 0]')\n"
+        }
+      ]
+    },
+    {
+      "id": "V004",
+      "mutant": "单规则偏差",
+      "accepted_cases": 3,
+      "caught": true,
+      "checks": [
+        {
+          "id": "C1",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116546,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C2",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.115391,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C3",
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.115693,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert _dp_actual == _dp_expected, ('unexpected result', repr(_dp_actual)[:1000], repr(_dp_expected)[:1000])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('unexpected result', \"({'a': 5}, ['rejected', 'applied'])\", \"({'a': 5}, ['rejected', 'duplicate'])\")\n"
+        }
+      ]
+    },
+    {
+      "id": "V005",
+      "mutant": "单规则偏差",
+      "accepted_cases": 3,
+      "caught": false,
+      "checks": [
+        {
+          "id": "C1",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.115307,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C2",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.115622,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C3",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.114971,
+          "detail": "all trusted assertion tests completed"
+        }
+      ]
+    },
+    {
+      "id": "V006",
+      "mutant": "单规则偏差",
+      "accepted_cases": 3,
+      "caught": false,
+      "checks": [
+        {
+          "id": "C1",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.115078,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C2",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.11499,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C3",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.115605,
+          "detail": "all trusted assertion tests completed"
+        }
+      ]
+    },
+    {
+      "id": "V007",
+      "mutant": "单规则偏差",
+      "accepted_cases": 3,
+      "caught": false,
+      "checks": [
+        {
+          "id": "C1",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.114792,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C2",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.114716,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C3",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.114988,
+          "detail": "all trusted assertion tests completed"
+        }
+      ]
+    },
+    {
+      "id": "V008",
+      "mutant": "单规则偏差",
+      "accepted_cases": 3,
+      "caught": true,
+      "checks": [
+        {
+          "id": "C1",
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.064546,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert _dp_actual == _dp_expected, ('unexpected result', repr(_dp_actual)[:1000], repr(_dp_expected)[:1000])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('unexpected result', '[]', '[(3, 3, True, True)]')\n"
+        },
+        {
+          "id": "C2",
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.064462,
+          "detail": "all trusted assertion tests completed"
+        },
+        {
+          "id": "C3",
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.064701,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert _dp_actual == _dp_expected, ('unexpected result', repr(_dp_actual)[:1000], repr(_dp_expected)[:1000])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('unexpected result', '[(0, 1, False, False), (1, 2, False, False)]', '[(0, 1, True, False), (1, 2, False, True)]')\n"
+        }
+      ]
+    }
+  ],
+  "costs": {
+    "direct": {
+      "calls": 8,
+      "incremental_peak_cny_including_unknown_reserves": 0.025338
+    },
+    "self_1": {
+      "calls": 16,
+      "incremental_peak_cny_including_unknown_reserves": 0.092552
+    },
+    "self_3": {
+      "calls": 45,
+      "incremental_peak_cny_including_unknown_reserves": 0.302107
+    },
+    "verified": {
+      "calls": 16,
+      "incremental_peak_cny_including_unknown_reserves": 0.041758
+    }
+  },
+  "new_experiment_conservative_cny_including_all_error_reserves": 0.393631,
+  "all_experiments_conservative_cny": 4.74333148,
+  "unknown_error_reserves_cny": 0.063536,
+  "successful_calls": 68,
+  "failed_calls_including_prior_auth_failure": 2,
+  "truncated_calls": 1,
+  "records": [
+    {
+      "id": "V001",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116123,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_1": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.115864,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_3": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116263,
+          "detail": "all trusted assertion tests completed"
+        },
+        "verified": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116083,
+          "detail": "all trusted assertion tests completed"
+        }
+      },
+      "case_audit": [
+        {
+          "id": "C1",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115669,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115132,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115806,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ],
+      "verified_status": "checks_passed"
+    },
+    {
+      "id": "V002",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116623,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_1": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.11612,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_3": {
+          "status": "unavailable",
+          "passed": false
+        },
+        "verified": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.11678,
+          "detail": "all trusted assertion tests completed"
+        }
+      },
+      "case_audit": [
+        {
+          "id": "C1",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.11537,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115653,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115025,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ],
+      "verified_status": "checks_passed"
+    },
+    {
+      "id": "V003",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118068,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_1": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116202,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_3": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116354,
+          "detail": "all trusted assertion tests completed"
+        },
+        "verified": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116078,
+          "detail": "all trusted assertion tests completed"
+        }
+      },
+      "case_audit": [
+        {
+          "id": "C1",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115771,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115316,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115512,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ],
+      "verified_status": "checks_passed"
+    },
+    {
+      "id": "V004",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116887,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_1": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116519,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_3": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116269,
+          "detail": "all trusted assertion tests completed"
+        },
+        "verified": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116867,
+          "detail": "all trusted assertion tests completed"
+        }
+      },
+      "case_audit": [
+        {
+          "id": "C1",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115607,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115602,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115846,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ],
+      "verified_status": "checks_passed"
+    },
+    {
+      "id": "V005",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117381,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_1": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116289,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_3": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116552,
+          "detail": "all trusted assertion tests completed"
+        },
+        "verified": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116262,
+          "detail": "all trusted assertion tests completed"
+        }
+      },
+      "case_audit": [
+        {
+          "id": "C1",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115291,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115636,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115538,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ],
+      "verified_status": "checks_passed"
+    },
+    {
+      "id": "V006",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116374,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_1": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116677,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_3": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116205,
+          "detail": "all trusted assertion tests completed"
+        },
+        "verified": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116467,
+          "detail": "all trusted assertion tests completed"
+        }
+      },
+      "case_audit": [
+        {
+          "id": "C1",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115336,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115446,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115908,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ],
+      "verified_status": "checks_passed"
+    },
+    {
+      "id": "V007",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116952,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_1": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116564,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_3": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116295,
+          "detail": "all trusted assertion tests completed"
+        },
+        "verified": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.11659,
+          "detail": "all trusted assertion tests completed"
+        }
+      },
+      "case_audit": [
+        {
+          "id": "C1",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.116045,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115588,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115656,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ],
+      "verified_status": "checks_passed"
+    },
+    {
+      "id": "V008",
+      "grades": {
+        "direct": {
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.116152,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 25, in <module>\n    assert any(inside(a,x) for a in rows) == any(inside(b,x) for b in out), (rows,out,x)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ([(-3, 1, False, False), (-1, 1, True, True), (-3, -2, False, True), (-3, 3, True, True), (-1, 0, False, False), (1, 3, True, False), (0, 3, False, False)], [(-3, 3, False, True)], -3.0)\n"
+        },
+        "self_1": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118077,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_3": {
+          "status": "unavailable",
+          "passed": false
+        },
+        "verified": {
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.11755,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 25, in <module>\n    assert any(inside(a,x) for a in rows) == any(inside(b,x) for b in out), (rows,out,x)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ([(-3, 1, False, False), (-1, 1, True, True), (-3, -2, False, True), (-3, 3, True, True), (-1, 0, False, False), (1, 3, True, False), (0, 3, False, False)], [(-3, 3, False, True)], -3.0)\n"
+        }
+      },
+      "case_audit": [
+        {
+          "id": "C1",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115752,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115806,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "decision": "accept",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115818,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ],
+      "verified_status": "checks_passed"
+    }
+  ]
+}

@@ -12,3 +12,4 @@ build/
 result.json
 result.md
 .DS_Store
+verify-runs/

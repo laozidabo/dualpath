@@ -1,0 +1,1552 @@
+{
+  "audit_date": "2026-10-31",
+  "offline_only": true,
+  "new_paid_calls": 0,
+  "frozen_hashes_verified": {
+    "vendor/dualpath/__init__.py": "61b1955e8be2cbe068588903e643e5fe20de9c39b4160973d0251d63a687db5a",
+    "vendor/dualpath/llm.py": "3aa8a25b387389c2e245a0d5726b97634282cf2121086e352a1ca0414a7a4ef5",
+    "vendor/dualpath/models.py": "9328c693b60976383e6029e94f6de3c9dd1f88e8f2a84619a0becc5c2ff23660",
+    "vendor/dualpath/orchestrator.py": "7c94a5a8095e9d72b2586b2b05fe1391087aa79a23b0e7b461dff258e2cbfa33",
+    "vendor/dualpath/paths.py": "91043f47ad5cb1067d8d4d2b2da6da357358fadcc21ca5ad1fa40014de1a607b",
+    "vendor/dualpath/prompts.py": "475f561970012f867742eb74615bc9af75a7a38b7bfa41c6a42f1eb63d6f2add",
+    "vendor/dualpath/reporting.py": "77ea0b712fb96e2633fb0919177e970fa001c9f6aae696cd81f79a090e8bd6b7",
+    "vendor/dualpath/search.py": "5f075fab863034cf176887b91b062e2ebf98186029fd261219a34cb7449f3a64",
+    "experiment.py": "47f9dd9827f2002ccd5e2cd1dfa143c39aa1dc07e1fe95b9dd51f51d70617273",
+    "evaluate.py": "c443084537b92e9fd119603ee95237a20ae32049074e7e07e78e1a0d12d6cbe2"
+  },
+  "dataset_sha256": "c9e2d59ff09f587c2835ce396b7629ad50e8d408f3a8d570e372936d622e8127",
+  "checks_passed": true,
+  "model_outputs_regraded": 90,
+  "reference_solutions_passed": 30,
+  "mutants_rejected": 30,
+  "physical_api": {
+    "physical_calls": 627,
+    "prompt_tokens": 896798,
+    "completion_tokens": 349117,
+    "cost_estimate_cny": 2.19051024,
+    "cost_peak_cny": 4.34970048,
+    "truncated_calls": 13
+  },
+  "cost_usage_estimate_cny": "2.15919024",
+  "unknown_failure_reserve_cny": "0.03132",
+  "cost_including_reserve_cny": "2.19051024",
+  "provider_bill_verified": false,
+  "paired_comparisons": {
+    "self_refine_vs_direct": {
+      "wins": 2,
+      "losses": 0,
+      "ties": 28,
+      "exact_mcnemar_p": 0.5
+    },
+    "dualpath_vs_direct": {
+      "wins": 2,
+      "losses": 0,
+      "ties": 28,
+      "exact_mcnemar_p": 0.5
+    },
+    "dualpath_vs_self_refine": {
+      "wins": 0,
+      "losses": 0,
+      "ties": 30,
+      "exact_mcnemar_p": 1
+    }
+  },
+  "sensitivity": {
+    "primary": {
+      "n": 30,
+      "excluded": [],
+      "passed": {
+        "direct": 26,
+        "self_refine": 28,
+        "dualpath": 28
+      }
+    },
+    "exclude_retried_task": {
+      "n": 29,
+      "excluded": [
+        "DP003"
+      ],
+      "passed": {
+        "direct": 25,
+        "self_refine": 27,
+        "dualpath": 27
+      }
+    },
+    "exclude_ambiguous_task": {
+      "n": 29,
+      "excluded": [
+        "DP005"
+      ],
+      "passed": {
+        "direct": 26,
+        "self_refine": 28,
+        "dualpath": 28
+      }
+    },
+    "exclude_both": {
+      "n": 28,
+      "excluded": [
+        "DP003",
+        "DP005"
+      ],
+      "passed": {
+        "direct": 25,
+        "self_refine": 27,
+        "dualpath": 27
+      }
+    }
+  },
+  "replay": [
+    {
+      "task_id": "DP001",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP002",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP003",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": [
+        298,
+        304,
+        305,
+        306,
+        307,
+        308
+      ]
+    },
+    {
+      "task_id": "DP004",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP005",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP006",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP007",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP008",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP009",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP010",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP011",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP012",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP013",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP014",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP015",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP016",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP017",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP018",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP019",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP020",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP021",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP022",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP023",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP024",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP025",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP026",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP027",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP028",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP029",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    },
+    {
+      "task_id": "DP030",
+      "exact_request_and_output_replay": true,
+      "discarded_attempt_calls": []
+    }
+  ],
+  "grades": [
+    {
+      "task_id": "DP001",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.137988,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118827,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117159,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP002",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117864,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117923,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117411,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP003",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118142,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117093,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117061,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP004",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.11822,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117759,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117522,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP005",
+      "grades": {
+        "direct": {
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.118745,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 17, in <module>\n    raise AssertionError(\"invalid graph accepted\")\nAssertionError: invalid graph accepted\n"
+        },
+        "self_refine": {
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.117508,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 17, in <module>\n    raise AssertionError(\"invalid graph accepted\")\nAssertionError: invalid graph accepted\n"
+        },
+        "dualpath": {
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.11774,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 17, in <module>\n    raise AssertionError(\"invalid graph accepted\")\nAssertionError: invalid graph accepted\n"
+        }
+      }
+    },
+    {
+      "task_id": "DP006",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118016,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117718,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117527,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP007",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116722,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117085,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116664,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP008",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117409,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117508,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117442,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP009",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.124817,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.119308,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118114,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP010",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117257,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116806,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118194,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP011",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118747,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116758,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116504,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP012",
+      "grades": {
+        "direct": {
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.117969,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 25, in <module>\n    raise AssertionError(('invalid version accepted', version))\nAssertionError: ('invalid version accepted', '1.2.3\\n')\n"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117095,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116728,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP013",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118682,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118662,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118665,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP014",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118559,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118562,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118249,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP015",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117512,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117463,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117895,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP016",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117761,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117228,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118537,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP017",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118361,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117796,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117966,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP018",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118085,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118234,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118322,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP019",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117681,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117519,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117477,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP020",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.11846,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117423,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117145,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP021",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.217878,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.216831,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117181,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP022",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117236,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116826,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116783,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP023",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118161,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117387,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117488,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP024",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118165,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117686,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117454,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP025",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118806,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117501,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117074,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP026",
+      "grades": {
+        "direct": {
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.117446,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 12, in <module>\n    assert schedule_jobs([('a',0,4,['r'])], {'r':[(2,2)]}) == [('a',0,4)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+        },
+        "self_refine": {
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.118529,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 12, in <module>\n    assert schedule_jobs([('a',0,4,['r'])], {'r':[(2,2)]}) == [('a',0,4)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+        },
+        "dualpath": {
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.118777,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert schedule_jobs([], {}) == []\n           ^^^^^^^^^^^^^\nNameError: name 'schedule_jobs' is not defined\n"
+        }
+      }
+    },
+    {
+      "task_id": "DP027",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116991,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116726,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117219,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP028",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116456,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117071,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.116775,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP029",
+      "grades": {
+        "direct": {
+          "status": "fail",
+          "passed": false,
+          "duration_seconds": 0.118,
+          "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 19, in <module>\n    raise AssertionError('conflicting id accepted')\nAssertionError: conflicting id accepted\n"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118101,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.117644,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    },
+    {
+      "task_id": "DP030",
+      "grades": {
+        "direct": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118421,
+          "detail": "all trusted assertion tests completed"
+        },
+        "self_refine": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118221,
+          "detail": "all trusted assertion tests completed"
+        },
+        "dualpath": {
+          "status": "pass",
+          "passed": true,
+          "duration_seconds": 0.118046,
+          "detail": "all trusted assertion tests completed"
+        }
+      }
+    }
+  ],
+  "controls": [
+    {
+      "task_id": "DP001",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.117136,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "touching_intervals_left_separate",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.115916,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 5, in <module>\n    assert merge_intervals([(5, 8), (1, 3), (3, 6)]) == [(1, 8)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP002",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.117972,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "consume_block_spanning_multiple_source_intervals",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.118303,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 10, in <module>\n    assert subtract_intervals([(0, 2), (4, 6), (8, 10)], [(1, 9)]) == [(0, 1), (9, 10)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP003",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116798,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "drop_trailing_empty_field",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.117496,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert split_escaped('') == ['']\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP004",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.117836,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "incorrectly_deduplicate_activities",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.117756,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 6, in <module>\n    assert busy_spans([(0, 5), (0, 5)], 2) == [(0, 5)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP005",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.118279,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "FIFO_instead_of_current_priority",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.117624,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 6, in <module>\n    assert schedule_tasks(['a', 'b', 'c'], [('b', 'a')]) == ['b', 'a', 'c']\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP006",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.11977,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "shallow_copy_base_aliases_nested_values",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.116398,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 25, in <module>\n    assert base == base_before and patch == patch_before\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP007",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.11655,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "parent_segments_cancel_each_other",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.116453,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 12, in <module>\n    assert normalize_path(source) == expected, (source, normalize_path(source))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('../../a/../b', 'b')\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP008",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.117276,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "even_window_uses_upper_middle",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.11729,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 6, in <module>\n    assert rolling_median([1, 2, 8, 3], 2) == [1.5, 5.0, 5.5]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP009",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.117983,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "gap_boundary_is_exclusive",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.117779,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 3, in <module>\n    assert sessionize([('b', 5), ('a', 0), ('a', 4), ('a', 8), ('a', 20)], 4) == [('a', 0, 8, 3), ('a', 20, 20, 1), ('b', 5, 5, 1)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP010",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.11744,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "silently_overwrite_duplicate_keys",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.117455,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 23, in <module>\n    raise AssertionError(('invalid input accepted', text))\nAssertionError: ('invalid input accepted', 'a=1 a=2')\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP011",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116502,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "later_index_wins_remainder_ties",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.116895,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 6, in <module>\n    assert allocate_units(5, [1, 1, 1]) == [2, 2, 1]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP012",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116811,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "numeric_prerelease_compared_lexicographically",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.11697,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 1, in <module>\n    assert compare_versions('1.0.0-alpha.2', '1.0.0-alpha.10') == -1\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP013",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.121288,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "starting_wall_is_free",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.118323,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 5, in <module>\n    assert shortest_path_with_breaks([[1]], 0) == -1\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP014",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.118717,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "updating_existing_key_does_not_refresh_recency",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.11811,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 7, in <module>\n    assert simulate_lru(2, [('put', 'a', 1), ('put', 'b', 2), ('put', 'a', 3)]) == ([], [('b', 2), ('a', 3)])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP015",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.11766,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "accept_mismatched_bracket_types",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.117713,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 22, in <module>\n    raise AssertionError(('invalid text accepted', source))\nAssertionError: ('invalid text accepted', '[)')\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP016",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.117473,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "follows_dependencies_instead_of_dependents",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.117548,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert affected_modules({'app':['lib'],'lib':['core']}, ['core']) == ['app','core','lib']\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP017",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.117306,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "first_source_wins_distance_ties",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.11664,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 5, in <module>\n    assert nearest_sources({'a':['x'],'b':['x'],'x':['y']}, ['b','a']) == {'a':(0,'a'),'b':(0,'b'),'x':(1,'a'),'y':(2,'a')}\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP018",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.118155,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "applies_original_offsets_sequentially",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.118982,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert apply_patches('abcdef', [(4,6,'Z'),(1,3,'X')]) == 'aXdZ'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP019",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.118629,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "deduplicates_identical_bookings",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.11749,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 7, in <module>\n    assert overbooked_spans([(0,2,3),(0,2,3)], 2) == [(0,2,4)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP020",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.117088,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "decodes_escapes_in_wrong_order",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.1172,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 6, in <module>\n    assert resolve_pointer(_doc,'/~01') == 'literal'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP021",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116574,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "recursive_generator_without_cycle_detection",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.118086,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 37, in <module>\n    raise AssertionError('cycle not detected')\nAssertionError: cycle not detected\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP022",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116783,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "naive_comma_split",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.116691,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert parse_csv_record('a,\"b,c\",\"d\"\"e\",') == ['a','b,c','d\"e','']\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP023",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.117382,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "backoff_from_start_instead_of_actual_previous_time",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.117139,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 3, in <module>\n    assert retry_times(0,3,1,4,[(1,3),(3,5)]) == [5,7,11]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP024",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.117435,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "cursor_filters_only_score",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.11775,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert page_after(_records,(1,'a'),5) == ([{'id':'b','score':1},{'id':'c','score':2}],None)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP025",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116835,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "uses_codepoint_count_as_display_width",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.116271,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert wrap_display('ab猫cd',3) == ['ab','猫c','d']\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP026",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.118505,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "schedules_after_last_booking_and_misses_gaps",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.118425,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 3, in <module>\n    assert schedule_jobs([('a',0,3,['r']),('b',4,2,['r'])], {'r':[(10,20)]}) == [('a',0,3),('b',4,6)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP027",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.11598,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "regex_translation_forgets_newline_matching",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.116696,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert wildcard_match('a\\nb','a*b') is True\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP028",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116687,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "fails_to_merge_adjacent_text",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.11826,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 3, in <module>\n    assert build_forest([('open','a'),('text','x'),('text','y'),('close','a')]) == [{'name':'a','children':['xy']}]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP029",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.117179,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "ignores_cancellations_before_posts",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.118849,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert project_balances([('cancel','x'),('post','x','a',5),('post','y','b',7)]) == {'b':7}\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "DP030",
+      "reference": {
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.118601,
+        "detail": "all trusted assertion tests completed"
+      },
+      "mutants": [
+        {
+          "name": "overwrites_partial_products_instead_of_accumulating",
+          "grade": {
+            "status": "fail",
+            "passed": false,
+            "duration_seconds": 0.118603,
+            "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert sparse_matmul({(0,0):2,(0,1):3},{(0,0):4,(1,0):5},1,2,1) == {(0,0):23}\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+          }
+        }
+      ]
+    }
+  ]
+}

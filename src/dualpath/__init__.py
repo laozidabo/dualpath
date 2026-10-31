@@ -2,9 +2,13 @@
 
 from .models import ErrorPathResult, Evidence, Problem, RunResult, classify_problems
 from .orchestrator import DualPath
+from .verification import Completion, VerifiedDualPath, VerificationResult
 
 __all__ = [
     "DualPath",
+    "VerifiedDualPath",
+    "VerificationResult",
+    "Completion",
     "ErrorPathResult",
     "Evidence",
     "Problem",

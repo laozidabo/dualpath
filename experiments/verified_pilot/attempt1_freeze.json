@@ -1,0 +1,50 @@
+{
+  "created_at": "2026-10-31T02:56:20.494469+00:00",
+  "protocol": {
+    "purpose": "8 题探索性流程试验，不用于宣称优越性",
+    "model": "deepseek-flash",
+    "temperature": 0.2,
+    "thinking": "disabled",
+    "max_tokens": 2048,
+    "repetitions": 1,
+    "global_incremental_peak_guard_cny": 5,
+    "old_experiment_peak_ledger_cny": 4.34970048,
+    "conditions": [
+      "direct",
+      "self_1",
+      "self_3",
+      "verified"
+    ],
+    "shared_initial": true,
+    "self_1_is_checkpoint_of_self_3": true,
+    "self_rounds": 3,
+    "condition_incremental_guard_cny": 0.3,
+    "verified_max_cases": 3,
+    "verified_max_calls_after_shared_initial": 6,
+    "verified_format_retries": 1,
+    "verified_repair_attempts": 1,
+    "ordering": "V001/V003/V005/V007 先 self；其他先 verified",
+    "hidden_tests_available_to_generation": false,
+    "exact_cost_matched": false,
+    "no_network_retries": true,
+    "stop_rule": "任一接口错误或截断使本题保留已有输出，完成本题后停止；不重抽题、不替换题"
+  },
+  "files": {
+    "experiments/verified_pilot/build_tasks.py": "11a92ed11289e4f90bf17f222a8f74ddb17af9dba9dbe16fe371e905062225f8",
+    "experiments/verified_pilot/run.py": "2ebcfdc0c10c70d67d568846b70ab33554c910dbfc3bbc2585b1d2240420bd52",
+    "experiments/verified_pilot/tasks.json": "b5de2fa433e26f69008ed1f3ec4d53e54eb39e1ea80fef5d6437f0a0948a5e91",
+    "src/dualpath/__init__.py": "1baa81163165bd16b0784b7a86b448603989b50c07e963254122818e8a525792",
+    "src/dualpath/__main__.py": "6d8b7d7846a845059d7a3107143f11131f63c5511d669b44085b15ec5e3d2279",
+    "src/dualpath/budgeted.py": "0144daef9daf07123cbbabbc7e2f22a6926930d897f8fdf34018035c24c8d4ee",
+    "src/dualpath/cli.py": "44e90a46fe670c6765a56c80367f6ee753d1682f90b7b4c73abf787e8eda4b23",
+    "src/dualpath/llm.py": "89c30d1b9efe922aed02621a0e13e54838ab6dc38a2cb80ebd3729f33db2ea12",
+    "src/dualpath/models.py": "654b3268f68726031e163e99921454dd39ff979080d48e179c7a6233000dff9f",
+    "src/dualpath/orchestrator.py": "62495d4c3f6d25c3a7d57ad79304053071426de224a54d2f4b7d7eb5414a2ade",
+    "src/dualpath/paths.py": "0295f961bd5360119e484053629b4281e12d66511a3e861a0cf7baf6c25bcacf",
+    "src/dualpath/prompts.py": "698bf805797196d172522817df19958849c9cda02ed3547de9c80cd90320ecce",
+    "src/dualpath/reporting.py": "47a6dc0b20e9fd7d7e6df4b41823fb26ea6fa9b2e62ed6a45f83207722a12054",
+    "src/dualpath/sandbox.py": "6f07973a186a6348dd700213262540505bcded78f491fbec1a53ecb4221ab004",
+    "src/dualpath/search.py": "8d1741b49eeda72f57d91a3f617a4d46d3bfdb659f4580598ee0111659b7298e",
+    "src/dualpath/verification.py": "c87d1e5096e72eb582223eab6fd09e1c842d1d4b5574cb3aec3c020b1d604194"
+  }
+}

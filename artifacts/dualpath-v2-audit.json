@@ -1,0 +1,16 @@
+{
+  "frozen_files_verified": 16,
+  "attempt1_snapshot_verified": true,
+  "tasks_unchanged_after_auth_failure": true,
+  "old_artifact_hashes_verified": 3,
+  "new_paid_request_attempts": 1,
+  "successful_new_model_responses": 0,
+  "read_only_diagnostic_http_status": 401,
+  "uncertain_charge_reserved_cny": 0.024428,
+  "available_paired_samples": 0,
+  "offline_demo_statuses": [
+    "repaired",
+    "repair_rejected"
+  ],
+  "tests_passed": 62
+}

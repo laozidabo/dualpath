@@ -1,0 +1,93 @@
+{
+  "network_calls": 0,
+  "all_checks_passed": true,
+  "batches": [
+    {
+      "batch": "pilot-2",
+      "audit": {
+        "network_calls": 0,
+        "frozen_files_verified": 16,
+        "ledger_call_statuses": {
+          "ok": 15,
+          "error": 1
+        },
+        "conservative_run_cny": 0.122878,
+        "cumulative_conservative_cny": 4.4970064800000005,
+        "records": [
+          {
+            "id": "V001",
+            "requests_reconstructed": 9,
+            "verified_replay_matches": true,
+            "hidden_grades_match": true,
+            "case_audit_matches": true
+          },
+          {
+            "id": "V002",
+            "requests_reconstructed": 7,
+            "verified_replay_matches": true,
+            "hidden_grades_match": true,
+            "case_audit_matches": true
+          }
+        ],
+        "all_checks_passed": true
+      }
+    },
+    {
+      "batch": "supplement-1",
+      "audit": {
+        "network_calls": 0,
+        "frozen_files_verified": 16,
+        "ledger_call_statuses": {
+          "ok": 53
+        },
+        "conservative_run_cny": 0.246325,
+        "cumulative_conservative_cny": 4.74333148,
+        "records": [
+          {
+            "id": "V003",
+            "requests_reconstructed": 9,
+            "verified_replay_matches": true,
+            "hidden_grades_match": true,
+            "case_audit_matches": true
+          },
+          {
+            "id": "V004",
+            "requests_reconstructed": 9,
+            "verified_replay_matches": true,
+            "hidden_grades_match": true,
+            "case_audit_matches": true
+          },
+          {
+            "id": "V005",
+            "requests_reconstructed": 9,
+            "verified_replay_matches": true,
+            "hidden_grades_match": true,
+            "case_audit_matches": true
+          },
+          {
+            "id": "V006",
+            "requests_reconstructed": 9,
+            "verified_replay_matches": true,
+            "hidden_grades_match": true,
+            "case_audit_matches": true
+          },
+          {
+            "id": "V007",
+            "requests_reconstructed": 9,
+            "verified_replay_matches": true,
+            "hidden_grades_match": true,
+            "case_audit_matches": true
+          },
+          {
+            "id": "V008",
+            "requests_reconstructed": 8,
+            "verified_replay_matches": true,
+            "hidden_grades_match": true,
+            "case_audit_matches": true
+          }
+        ],
+        "all_checks_passed": true
+      }
+    }
+  ]
+}

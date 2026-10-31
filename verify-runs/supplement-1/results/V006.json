@@ -1,0 +1,119 @@
+{
+  "id": "V006",
+  "initial": "```python\nimport re\n\ndef compare_versions(a, b):\n    def parse(s):\n        if not isinstance(s, str):\n            raise ValueError(\"version must be a string\")\n        if s != s.strip() or any(c.isspace() for c in s):\n            raise ValueError(\"whitespace not allowed\")\n        m = re.fullmatch(\n            r'([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            s\n        )\n        if not m:\n            raise ValueError(\"invalid version format\")\n        major, minor, patch, pre, build = m.groups()\n        nums = []\n        for part in (major, minor, patch):\n            if len(part) > 1 and part[0] == '0':\n                raise ValueError(\"leading zero in version number\")\n            nums.append(int(part))\n        pre_ids = None\n        if pre is not None:\n            pre_ids = pre.split('.')\n            for ident in pre_ids:\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid prerelease identifier\")\n                if ident.isdigit() and len(ident) > 1 and ident[0] == '0':\n                    raise ValueError(\"leading zero in numeric prerelease identifier\")\n        if build is not None:\n            for ident in build.split('.'):\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid build identifier\")\n        return nums, pre_ids\n\n    na, pa = parse(a)\n    nb, pb = parse(b)\n\n    for x, y in zip(na, nb):\n        if x < y:\n            return -1\n        if x > y:\n            return 1\n\n    if pa is None and pb is None:\n        return 0\n    if pa is None:\n        return 1\n    if pb is None:\n        return -1\n\n    for x, y in zip(pa, pb):\n        xd = x.isdigit()\n        yd = y.isdigit()\n        if xd and yd:\n            xi, yi = int(x), int(y)\n            if xi < yi:\n                return -1\n            if xi > yi:\n                return 1\n        elif xd and not yd:\n            return -1\n        elif not xd and yd:\n            return 1\n        else:\n            if x < y:\n                return -1\n            if x > y:\n                return 1\n\n    if len(pa) < len(pb):\n        return -1\n    if len(pa) > len(pb):\n        return 1\n    return 0\n```",
+  "self_rounds": [
+    {
+      "round": 1,
+      "feedback": "实现基本正确，但有一个明确违反任务要求的点需要修改。\n\n## 需要修改的问题\n\n**`isdigit()` 不是“纯 ASCII 数字”判断。**\n\n任务规定标识符只允许 ASCII 字母、数字和连字符，且“纯数字标识符”指仅由 ASCII 数字组成。但 Python 的 `str.isdigit()` 对 Unicode 数字也返回 `True`，例如：\n\n```python\n'²'.isdigit()      # True\n'١'.isdigit()      # True（阿拉伯-印度数字）\n```\n\n虽然正则 `[0-9A-Za-z-]+` 已经限制了标识符字符集，因此实际进入 `isdigit()` 的字符只可能是 ASCII 数字或字母/连字符，**在当前正则约束下不会产生错误结果**。不过为了语义严谨、避免依赖“正则已经过滤”的隐含前提，建议改为显式 ASCII 判断：\n\n```python\ndef is_ascii_digits(s):\n    return bool(s) and all('0' <= c <= '9' for c in s)\n```\n\n并在预发布校验和比较中统一使用它。\n\n## 其他检查结论\n\n逐项核对如下，均满足：\n\n- **完整校验两者**：`parse(a)` 和 `parse(b)` 都在比较前执行，任一不合法即抛 `ValueError`。✔\n- **格式 `major.minor.patch[-pre][+build]`**：正则强制顺序，`-` 在 `+` 前，`+` 后不能再有 `-` 段。✔\n- **major/minor/patch 非空 ASCII 数字、无前导零、0 允许**：正则 `[0-9]+` + 前导零检查，`\"0\"` 通过。✔\n- **不限制 100 位以内**：使用 `int()`，Python 任意精度整数，无位数限制。✔\n- **预发布/构建段非空标识符、点分隔、字符集 `[0-9A-Za-z-]`**：正则保证。✔\n- **预发布纯数字无前导零**：已检查。✔\n- **构建段纯数字可有前导零**：未做前导零检查。✔\n- **不允许空白或尾随换行**：`s != s.strip()` 与 `any(c.isspace())` 双重拦截；`re.fullmatch` 也阻止尾随换行。✔\n- **正式版 > 预发布版**：`pa is None` 返回 1，`pb is None` 返回 -1。✔\n- **预发布逐标识符比较**：纯数字按整数、数字 < 非数字、非数字按 ASCII 字典序、公共前缀短者小。✔\n- **构建段仅校验不参与比较**：`parse` 返回 `(nums, pre_ids)`，build 被丢弃。✔\n- **返回 -1/0/1**：所有路径均返回这三者之一。✔\n\n## 建议修改\n\n将两处 `ident.isdigit()` / `x.isdigit()` / `y.isdigit()` 替换为显式 ASCII 数字判断，例如：\n\n```python\ndef is_num(s):\n    return all('0' <= c <= '9' for c in s)\n```\n\n预发布校验：\n\n```python\nif is_num(ident) and len(ident) > 1 and ident[0] == '0':\n    raise ValueError(...)\n```\n\n比较时：\n\n```python\nxd = is_num(x)\nyd = is_num(y)\n```\n\n这样语义与任务描述完全一致，不依赖 `isdigit()` 的 Unicode 行为。除此之外无需修改。",
+      "output": "```python\nimport re\n\ndef compare_versions(a, b):\n    def is_ascii_digits(s):\n        return bool(s) and all('0' <= c <= '9' for c in s)\n\n    def parse(s):\n        if not isinstance(s, str):\n            raise ValueError(\"version must be a string\")\n        if s != s.strip() or any(c.isspace() for c in s):\n            raise ValueError(\"whitespace not allowed\")\n        m = re.fullmatch(\n            r'([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            s\n        )\n        if not m:\n            raise ValueError(\"invalid version format\")\n        major, minor, patch, pre, build = m.groups()\n        nums = []\n        for part in (major, minor, patch):\n            if len(part) > 1 and part[0] == '0':\n                raise ValueError(\"leading zero in version number\")\n            nums.append(int(part))\n        pre_ids = None\n        if pre is not None:\n            pre_ids = pre.split('.')\n            for ident in pre_ids:\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid prerelease identifier\")\n                if is_ascii_digits(ident) and len(ident) > 1 and ident[0] == '0':\n                    raise ValueError(\"leading zero in numeric prerelease identifier\")\n        if build is not None:\n            for ident in build.split('.'):\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid build identifier\")\n        return nums, pre_ids\n\n    na, pa = parse(a)\n    nb, pb = parse(b)\n\n    for x, y in zip(na, nb):\n        if x < y:\n            return -1\n        if x > y:\n            return 1\n\n    if pa is None and pb is None:\n        return 0\n    if pa is None:\n        return 1\n    if pb is None:\n        return -1\n\n    for x, y in zip(pa, pb):\n        xd = is_ascii_digits(x)\n        yd = is_ascii_digits(y)\n        if xd and yd:\n            xi, yi = int(x), int(y)\n            if xi < yi:\n                return -1\n            if xi > yi:\n                return 1\n        elif xd and not yd:\n            return -1\n        elif not xd and yd:\n            return 1\n        else:\n            if x < y:\n                return -1\n            if x > y:\n                return 1\n\n    if len(pa) < len(pb):\n        return -1\n    if len(pa) > len(pb):\n        return 1\n    return 0\n```"
+    },
+    {
+      "round": 2,
+      "feedback": "实现已正确满足任务要求，无需修改。\n\n逐项核对：\n\n- **完整校验两者**：`parse(a)` 和 `parse(b)` 都在比较前执行，任一不合法即抛 `ValueError`。\n- **格式 major.minor.patch**：正则强制三段数字，且用 `fullmatch` 拒绝多余内容。\n- **可选 `-预发布`、可选 `+构建` 且顺序固定**：正则中 `-` 段在 `+` 段之前，`+` 段可选。\n- **非空 ASCII 数字、无前导零、0 允许**：`[0-9]+` 保证非空 ASCII 数字；`len>1 and part[0]=='0'` 拒绝前导零；`\"0\"` 通过。\n- **不限制 100 位**：没有长度上限，`int()` 可处理任意长度（Python 3.11+ 对超长十进制字符串转换有默认 4300 位限制，但题目只要求“不限制在 100 位以内”，100 位远低于该限制，且题目未要求任意超长；此处不构成对 100 位以内合法输入的限制）。\n- **预发布/构建标识符规则**：正则 `[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*` 保证非空、点分隔、仅允许 ASCII 字母数字连字符；预发布纯数字前导零被拒绝；构建段纯数字允许前导零（未检查）。\n- **不允许空白或尾随换行**：`s != s.strip()` 与 `any(c.isspace())` 双重检查；正则本身也不接受空白。\n- **比较三个版本整数**：逐段比较。\n- **正式版大于预发布版**：`pa is None` 返回 1，`pb is None` 返回 -1。\n- **预发布标识符比较**：纯数字按整数比；纯数字小于非纯数字；非纯数字按 ASCII 字典序（Python 字符串比较对 ASCII 即字典序）；公共前缀相同则较少者小。\n- **构建段仅校验不参与比较**：`parse` 返回 `nums, pre_ids`，构建段被丢弃。\n\n边界情况也成立：如 `1.0.0-alpha` vs `1.0.0-alpha.1` 返回 -1；`1.0.0-alpha.1` vs `1.0.0-alpha.beta` 返回 -1；`1.0.0+build` vs `1.0.0` 返回 0；`1.0.0-01` 抛 `ValueError`；`1.0.0+01` 合法。\n\n结论：无需修改。",
+      "output": "```python\nimport re\n\ndef compare_versions(a, b):\n    def is_ascii_digits(s):\n        return bool(s) and all('0' <= c <= '9' for c in s)\n\n    def parse(s):\n        if not isinstance(s, str):\n            raise ValueError(\"version must be a string\")\n        if s != s.strip() or any(c.isspace() for c in s):\n            raise ValueError(\"whitespace not allowed\")\n        m = re.fullmatch(\n            r'([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            s\n        )\n        if not m:\n            raise ValueError(\"invalid version format\")\n        major, minor, patch, pre, build = m.groups()\n        nums = []\n        for part in (major, minor, patch):\n            if len(part) > 1 and part[0] == '0':\n                raise ValueError(\"leading zero in version number\")\n            nums.append(int(part))\n        pre_ids = None\n        if pre is not None:\n            pre_ids = pre.split('.')\n            for ident in pre_ids:\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid prerelease identifier\")\n                if is_ascii_digits(ident) and len(ident) > 1 and ident[0] == '0':\n                    raise ValueError(\"leading zero in numeric prerelease identifier\")\n        if build is not None:\n            for ident in build.split('.'):\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid build identifier\")\n        return nums, pre_ids\n\n    na, pa = parse(a)\n    nb, pb = parse(b)\n\n    for x, y in zip(na, nb):\n        if x < y:\n            return -1\n        if x > y:\n            return 1\n\n    if pa is None and pb is None:\n        return 0\n    if pa is None:\n        return 1\n    if pb is None:\n        return -1\n\n    for x, y in zip(pa, pb):\n        xd = is_ascii_digits(x)\n        yd = is_ascii_digits(y)\n        if xd and yd:\n            xi, yi = int(x), int(y)\n            if xi < yi:\n                return -1\n            if xi > yi:\n                return 1\n        elif xd and not yd:\n            return -1\n        elif not xd and yd:\n            return 1\n        else:\n            if x < y:\n                return -1\n            if x > y:\n                return 1\n\n    if len(pa) < len(pb):\n        return -1\n    if len(pa) > len(pb):\n        return 1\n    return 0\n```"
+    },
+    {
+      "round": 3,
+      "feedback": "分析候选实现与任务要求：\n\n**格式校验部分：**\n- 正则 `([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-...)?(?:\\+...)?` 正确强制 major.minor.patch 顺序、可选预发布、可选构建，且构建必须在预发布之后。\n- 预发布/构建标识符 `[0-9A-Za-z-]+` 正确限制为 ASCII 字母数字连字符，且非空、点分隔。\n- 前导零检查：major/minor/patch 正确；预发布纯数字标识符正确；构建段不检查前导零，符合要求。\n- 空白检查：`s != s.strip()` 和 `any(c.isspace() for c in s)` 能拒绝前后空白、内部空白、尾随换行。注意 `isspace()` 对 Unicode 空白也返回 True，但正则本身已排除非 ASCII 字符，所以不会误伤合法输入。\n- 非字符串输入抛 ValueError，符合\"任何一个不合法都抛 ValueError\"。\n\n**比较部分：**\n- 三个版本整数依次比较，正确。\n- 正式版大于预发布版：`pa is None` 返回 1，正确。\n- 预发布标识符逐个比较：纯数字按整数比、纯数字小于非纯数字、非纯数字按 ASCII 字典序（Python 字符串 `<` 对 ASCII 字符即码点序），正确。\n- 公共前缀相同则较少一方小，正确。\n- 构建段不参与比较，正确。\n\n**边界情况核查：**\n- 大整数：Python int 无限制，`int(part)` 对任意位数合法输入都能处理，符合\"不限制 100 位以内\"。\n- 预发布纯数字大整数比较：`int(x)` 同样无限制，正确。\n- `0` 本身允许：`len(part) > 1` 才检查前导零，正确。\n- 空标识符（如 `1.0.0-`、`1.0.0-a..b`）：正则要求 `+` 且点分隔非空，会拒绝，正确。\n- 构建段纯数字前导零允许：未检查，正确。\n- 预发布段与构建段同时存在顺序：正则强制 `-pre+` 在前，正确。\n- 只有构建段无预发布：`1.0.0+build` 合法，`pa is None`，正确。\n- 非 ASCII 数字（如阿拉伯数字）：正则 `[0-9]` 只匹配 ASCII，正确。\n- 标识符含下划线或点：正则拒绝，正确。\n\n**潜在问题：**\n1. `is_ascii_digits` 用 `'0' <= c <= '9'`，正确限定 ASCII。\n2. 正则中 `[0-9A-Za-z-]` 的连字符在字符类末尾，不会被解释为范围，正确。\n3. `s != s.strip()` 对空字符串：空字符串 `strip()` 后仍为空，相等，但正则 `fullmatch` 会失败，抛 ValueError，正确。\n4. 非字符串输入：`isinstance` 检查在 `s.strip()` 之前，正确避免 AttributeError。\n\n**一个细节：** 任务说\"任何一个不合法都抛 ValueError\"。候选先 parse(a) 再 parse(b)，若 a 不合法立即抛，符合。若 a 合法 b 不合法，parse(b) 抛，符合。\n\n**结论：** 实现正确覆盖所有明确要求，未发现反例或实现错误。无需修改。\n\n无需修改。",
+      "output": "```python\nimport re\n\ndef compare_versions(a, b):\n    def is_ascii_digits(s):\n        return bool(s) and all('0' <= c <= '9' for c in s)\n\n    def parse(s):\n        if not isinstance(s, str):\n            raise ValueError(\"version must be a string\")\n        if s != s.strip() or any(c.isspace() for c in s):\n            raise ValueError(\"whitespace not allowed\")\n        m = re.fullmatch(\n            r'([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            s\n        )\n        if not m:\n            raise ValueError(\"invalid version format\")\n        major, minor, patch, pre, build = m.groups()\n        nums = []\n        for part in (major, minor, patch):\n            if len(part) > 1 and part[0] == '0':\n                raise ValueError(\"leading zero in version number\")\n            nums.append(int(part))\n        pre_ids = None\n        if pre is not None:\n            pre_ids = pre.split('.')\n            for ident in pre_ids:\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid prerelease identifier\")\n                if is_ascii_digits(ident) and len(ident) > 1 and ident[0] == '0':\n                    raise ValueError(\"leading zero in numeric prerelease identifier\")\n        if build is not None:\n            for ident in build.split('.'):\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid build identifier\")\n        return nums, pre_ids\n\n    na, pa = parse(a)\n    nb, pb = parse(b)\n\n    for x, y in zip(na, nb):\n        if x < y:\n            return -1\n        if x > y:\n            return 1\n\n    if pa is None and pb is None:\n        return 0\n    if pa is None:\n        return 1\n    if pb is None:\n        return -1\n\n    for x, y in zip(pa, pb):\n        xd = is_ascii_digits(x)\n        yd = is_ascii_digits(y)\n        if xd and yd:\n            xi, yi = int(x), int(y)\n            if xi < yi:\n                return -1\n            if xi > yi:\n                return 1\n        elif xd and not yd:\n            return -1\n        elif not xd and yd:\n            return 1\n        else:\n            if x < y:\n                return -1\n            if x > y:\n                return 1\n\n    if len(pa) < len(pb):\n        return -1\n    if len(pa) > len(pb):\n        return 1\n    return 0\n```"
+    }
+  ],
+  "verified": {
+    "task": "实现 compare_versions(a,b)，输入为两个字符串。先完整校验两者，任何一个不合法都抛 ValueError；合法时按以下版本规则比较，返回 -1、0 或 1。\n格式是 major.minor.patch，可选 -预发布段，可选 +构建段（只能按此顺序）。major/minor/patch 都是非空 ASCII 数字，不允许前导零，数字 0 本身允许；不限制整数位数在 100 位以内的合法输入。\n预发布段和构建段都由一个或多个非空标识符用点分隔；标识符只允许 ASCII 字母、数字和连字符。预发布中纯数字标识符不允许前导零；构建段纯数字可有前导零。不允许任何空白或尾随换行。\n依次比较三个版本整数；相同则正式版大于有预发布段的版本。双方都有预发布时逐个比较标识符：两个纯数字按整数比，纯数字小于非纯数字，两个非纯数字按 ASCII 字典序比；公共前缀相同则标识符较少的一方小。构建段仅校验、不参与比较。",
+    "entry_point": "compare_versions",
+    "initial_output": "```python\nimport re\n\ndef compare_versions(a, b):\n    def parse(s):\n        if not isinstance(s, str):\n            raise ValueError(\"version must be a string\")\n        if s != s.strip() or any(c.isspace() for c in s):\n            raise ValueError(\"whitespace not allowed\")\n        m = re.fullmatch(\n            r'([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            s\n        )\n        if not m:\n            raise ValueError(\"invalid version format\")\n        major, minor, patch, pre, build = m.groups()\n        nums = []\n        for part in (major, minor, patch):\n            if len(part) > 1 and part[0] == '0':\n                raise ValueError(\"leading zero in version number\")\n            nums.append(int(part))\n        pre_ids = None\n        if pre is not None:\n            pre_ids = pre.split('.')\n            for ident in pre_ids:\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid prerelease identifier\")\n                if ident.isdigit() and len(ident) > 1 and ident[0] == '0':\n                    raise ValueError(\"leading zero in numeric prerelease identifier\")\n        if build is not None:\n            for ident in build.split('.'):\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid build identifier\")\n        return nums, pre_ids\n\n    na, pa = parse(a)\n    nb, pb = parse(b)\n\n    for x, y in zip(na, nb):\n        if x < y:\n            return -1\n        if x > y:\n            return 1\n\n    if pa is None and pb is None:\n        return 0\n    if pa is None:\n        return 1\n    if pb is None:\n        return -1\n\n    for x, y in zip(pa, pb):\n        xd = x.isdigit()\n        yd = y.isdigit()\n        if xd and yd:\n            xi, yi = int(x), int(y)\n            if xi < yi:\n                return -1\n            if xi > yi:\n                return 1\n        elif xd and not yd:\n            return -1\n        elif not xd and yd:\n            return 1\n        else:\n            if x < y:\n                return -1\n            if x > y:\n                return 1\n\n    if len(pa) < len(pb):\n        return -1\n    if len(pa) > len(pb):\n        return 1\n    return 0\n```",
+    "final_output": "```python\nimport re\n\ndef compare_versions(a, b):\n    def parse(s):\n        if not isinstance(s, str):\n            raise ValueError(\"version must be a string\")\n        if s != s.strip() or any(c.isspace() for c in s):\n            raise ValueError(\"whitespace not allowed\")\n        m = re.fullmatch(\n            r'([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            s\n        )\n        if not m:\n            raise ValueError(\"invalid version format\")\n        major, minor, patch, pre, build = m.groups()\n        nums = []\n        for part in (major, minor, patch):\n            if len(part) > 1 and part[0] == '0':\n                raise ValueError(\"leading zero in version number\")\n            nums.append(int(part))\n        pre_ids = None\n        if pre is not None:\n            pre_ids = pre.split('.')\n            for ident in pre_ids:\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid prerelease identifier\")\n                if ident.isdigit() and len(ident) > 1 and ident[0] == '0':\n                    raise ValueError(\"leading zero in numeric prerelease identifier\")\n        if build is not None:\n            for ident in build.split('.'):\n                if not re.fullmatch(r'[0-9A-Za-z-]+', ident):\n                    raise ValueError(\"invalid build identifier\")\n        return nums, pre_ids\n\n    na, pa = parse(a)\n    nb, pb = parse(b)\n\n    for x, y in zip(na, nb):\n        if x < y:\n            return -1\n        if x > y:\n            return 1\n\n    if pa is None and pb is None:\n        return 0\n    if pa is None:\n        return 1\n    if pb is None:\n        return -1\n\n    for x, y in zip(pa, pb):\n        xd = x.isdigit()\n        yd = y.isdigit()\n        if xd and yd:\n            xi, yi = int(x), int(y)\n            if xi < yi:\n                return -1\n            if xi > yi:\n                return 1\n        elif xd and not yd:\n            return -1\n        elif not xd and yd:\n            return 1\n        else:\n            if x < y:\n                return -1\n            if x > y:\n                return 1\n\n    if len(pa) < len(pb):\n        return -1\n    if len(pa) > len(pb):\n        return 1\n    return 0\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "major/minor/patch 都是非空 ASCII 数字，不允许前导零，数字 0 本身允许",
+        "reason": "前导零的版本号不合法，应抛 ValueError",
+        "args": "(\"01.0.0\", \"1.0.0\")",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "预发布中纯数字标识符不允许前导零",
+        "reason": "预发布纯数字标识符有前导零，不合法",
+        "args": "(\"1.0.0-01\", \"1.0.0-1\")",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "构建段纯数字可有前导零",
+        "reason": "构建段纯数字允许前导零，合法且不参与比较，两者相等",
+        "args": "(\"1.0.0+001\", \"1.0.0+1\")",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "0"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "规范明确 major/minor/patch 不允许前导零，\"01.0.0\" 不合法，任一不合法即抛 ValueError。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "规范明确预发布中纯数字标识符不允许前导零，\"1.0.0-01\" 不合法，应抛 ValueError。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "构建段纯数字允许前导零，\"+001\" 与 \"+1\" 均合法；构建段不参与比较，故两版本相等返回 0。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115855,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115806,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115708,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  }
+}
