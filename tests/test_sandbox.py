@@ -1,14 +1,14 @@
 """Safety and grading contract checks; integration checks need real bwrap."""
-import importlib.util
 import os
-from pathlib import Path
 import socket
 import tempfile
 import unittest
+from pathlib import Path
 from unittest import mock
 
-ROOT = Path(__file__).resolve().parents[1]
 from dualpath import sandbox as evaluate
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class ExtractionTests(unittest.TestCase):
@@ -29,7 +29,14 @@ class ExtractionTests(unittest.TestCase):
 
 class FailClosedTests(unittest.TestCase):
     def test_unsupported_never_executes_candidate(self):
-        with mock.patch.object(evaluate, "sandbox_support", return_value={"supported": False, "detail": "sandbox_unsupported: test"}), mock.patch.object(evaluate.subprocess, "Popen") as popen:
+        with (
+            mock.patch.object(
+                evaluate,
+                "sandbox_support",
+                return_value={"supported": False, "detail": "sandbox_unsupported: test"},
+            ),
+            mock.patch.object(evaluate.subprocess, "Popen") as popen,
+        ):
             result = evaluate.grade("raise RuntimeError('must not execute')", "assert True")
         self.assertEqual(result["status"], "infrastructure_error")
         popen.assert_not_called()
@@ -47,7 +54,11 @@ class SandboxTests(unittest.TestCase):
         self.assertEqual(evaluate.grade("def add(a,b): return a-b", "assert add(2,3)==5")["status"], "fail")
 
     def test_unittest_pass_and_fail(self):
-        tests = "import unittest\nimport solution\nclass TestIt(unittest.TestCase):\n def test_answer(self): self.assertEqual(solution.answer(), 42)\n"
+        tests = (
+            "import unittest\nimport solution\n"
+            "class TestIt(unittest.TestCase):\n"
+            " def test_answer(self): self.assertEqual(solution.answer(), 42)\n"
+        )
         self.assertEqual(evaluate.grade("def answer(): return 42", tests)["status"], "pass")
         self.assertEqual(evaluate.grade("def answer(): return 0", tests)["status"], "fail")
 

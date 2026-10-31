@@ -6,7 +6,7 @@ import asyncio
 import json
 from typing import Any
 
-from .llm import LanguageModel, complete_json
+from .llm import DualPathError, LanguageModel, complete_json
 from .models import ErrorPathResult, Evidence, Problem, classify_problems
 from .prompts import (
     DIRECT_CONVERGE,
@@ -62,16 +62,39 @@ class ErrorPath:
     async def run(self, task: str) -> ErrorPathResult:
         candidates = await self._discover(task)
         investigated = await asyncio.gather(
-            *(self._investigate(task, candidate) for candidate in candidates)
+            *(self._investigate(task, candidate) for candidate in candidates),
+            return_exceptions=True,
         )
-        problems = classify_problems(list(investigated))
+        problems: list[Problem] = []
+        failures: list[dict[str, str]] = []
+        for candidate, outcome in zip(candidates, investigated, strict=True):
+            if isinstance(outcome, BaseException):
+                if isinstance(outcome, asyncio.CancelledError):
+                    raise outcome
+                failures.append(
+                    {
+                        "stage": "error_investigate",
+                        "problem": candidate.id,
+                        "title": candidate.title,
+                        "error_type": type(outcome).__name__,
+                    }
+                )
+            else:
+                problems.append(outcome)
+        if not problems:
+            return ErrorPathResult(output="", problems=[], failures=failures)
+        ordered = classify_problems(problems)
         summary_payload = {
             "task": task,
             "instruction": "总结线路二走过的错误路线。",
-            "problems": [problem.to_dict() for problem in problems],
+            "problems": [problem.to_dict() for problem in ordered],
         }
-        output = await self.model.complete(ERROR_SUMMARY, as_json(summary_payload))
-        return ErrorPathResult(output=output, problems=problems)
+        try:
+            output = await self.model.complete(ERROR_SUMMARY, as_json(summary_payload))
+        except DualPathError as error:
+            failures.append({"stage": "error_summary", "error_type": type(error).__name__})
+            output = ""
+        return ErrorPathResult(output=output, problems=ordered, failures=failures)
 
     async def converge(
         self,

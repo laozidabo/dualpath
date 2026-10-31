@@ -1,6 +1,5 @@
 """预算与故障恢复测试，全部使用本地模拟接口。"""
 import asyncio
-import json
 import threading
 import urllib.error
 
@@ -92,14 +91,18 @@ async def test_pending_record_and_cross_process_lock(tmp_path):
 async def test_group_limit_applies_independently(tmp_path):
     with Ledger(tmp_path / "ledger.json", 1) as ledger:
         with pytest.raises(BudgetExceeded):
-            await BudgetedDeepSeek("key", ledger, group_limit_cny=.001, transport=lambda _: response()).complete("a", "b")
+            await BudgetedDeepSeek(
+                "key", ledger, group_limit_cny=.001, transport=lambda _: response()
+            ).complete("a", "b")
         assert not ledger.data["calls"]
 
 
 @pytest.mark.asyncio
 async def test_http_status_is_logged_without_response_or_headers(tmp_path):
     def fail(payload):
-        raise urllib.error.HTTPError("https://example.invalid/private", 401, "secret", {"Authorization": "secret"}, None)
+        raise urllib.error.HTTPError(
+            "https://example.invalid/private", 401, "secret", {"Authorization": "secret"}, None
+        )
     path = tmp_path / "ledger.json"
     with Ledger(path, 1) as ledger:
         with pytest.raises(RuntimeError):
