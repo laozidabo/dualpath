@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: lint（ruff）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: 安装依赖
+        run: python -m pip install -e ".[dev]"
+      - name: 运行 ruff
+        run: ruff check .
+
+  test:
+    name: test（Python ${{ matrix.python-version }}）
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: 安装 bubblewrap
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          # Ubuntu 24.04 默认限制非特权用户命名空间；存在该开关时尽力放开，
+          # 以便沙箱测试真实执行。仍不可用时，测试会自动 skip。
+          if [ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          fi
+      - name: 安装依赖
+        run: python -m pip install -e ".[dev]"
+      - name: 运行测试
+        run: pytest -q
+      - name: 离线验证演示（不调用模型）
+        run: |
+          if python -c "from dualpath.sandbox import sandbox_support; import sys; sys.exit(0 if sandbox_support()['supported'] else 1)"; then
+            python examples/verify_offline.py
+          else
+            echo "bubblewrap 不可用，跳过离线演示；沙箱相关测试已由 requires_sandbox 自动 skip。"
+          fi
