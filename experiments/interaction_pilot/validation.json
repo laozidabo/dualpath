@@ -1,0 +1,176 @@
+[
+  {
+    "id": "I001",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116166,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116967,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert allocate(10, [1, 1, 1]) == [4, 3, 3]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      },
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116534,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 9, in <module>\n    assert allocate(2, [3, 5]) == [1, 1]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "I002",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.11619,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.115943,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert compare_versions(\"1.0.0-alpha\", \"1.0.0\") == -1\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      },
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116747,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 14, in <module>\n    assert compare_versions(\"1.0.0-5\", \"1.0.0-4a\") == -1\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "I003",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116244,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116541,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert wildcard_match(\"a*\", \"a/b\") is False\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      },
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116262,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 3, in <module>\n    assert wildcard_match(\"a*\", \"abc\") is True\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "I004",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.115217,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116138,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert parse_duration(\"10ms\") == 10\n           ~~~~~~~~~~~~~~^^^^^^^^\n  File \"/work/solution.py\", line 13, in parse_duration\n    raise ValueError\nValueError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "I005",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.11617,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116276,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 3, in <module>\n    assert dedupe_events([(\"a\", \"1\"), (\"b\", \"2\"), (\"a\", \"3\")]) == [(\"a\", \"3\"), (\"b\", \"2\")]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      },
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.115396,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 2, in <module>\n    assert dedupe_events([(\"a\", \"1\")]) == [(\"a\", \"1\")]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "I006",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116504,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116811,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 1, in <module>\n    assert token_bucket(1, 1, [(0, 1), (500, 1), (1000, 1)]) == [True, False, True]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      },
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.118165,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 8, in <module>\n    assert token_bucket(1, 10, [(0, 0), (100, 1), (100, 1)]) == [True, True, False]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "I007",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.115923,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116019,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 4, in <module>\n    assert parse_config('a=\"x # y\"') == {\"a\": \"x # y\"}\n           ~~~~~~~~~~~~^^^^^^^^^^^^^\n  File \"/work/solution.py\", line 19, in parse_config\n    raise ValueError\nValueError\n"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "id": "I008",
+    "reference": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.115703,
+      "detail": "all trusted assertion tests completed"
+    },
+    "mutants": [
+      {
+        "status": "fail",
+        "passed": false,
+        "duration_seconds": 0.116528,
+        "detail": "Traceback (most recent call last):\n  File \"/work/runner.py\", line 30, in <module>\n    exec(test_code, test_module.__dict__)\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/tests.py\", line 3, in <module>\n    assert group_consecutive([3, 1, 2, 7]) == [(1, 3), (7, 7)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ],
+    "valid": true
+  }
+]

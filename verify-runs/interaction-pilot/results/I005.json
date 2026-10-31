@@ -1,0 +1,325 @@
+{
+  "id": "I005",
+  "initial": "```python\ndef dedupe_events(events):\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n    order = []\n    last = {}\n    for item in events:\n        if not isinstance(item, tuple) or len(item) != 2:\n            raise ValueError(\"each element must be a 2-tuple\")\n        key, payload = item\n        if not isinstance(key, str) or not isinstance(payload, str):\n            raise ValueError(\"key and payload must be str\")\n        if key not in last:\n            order.append(key)\n        last[key] = payload\n    return [(key, last[key]) for key in order]\n```",
+  "verified_default": {
+    "task": "实现 dedupe_events(events)，输入是由二元组 (key, payload) 组成的列表或元组，key 与 payload 都必须是 str，否则抛 ValueError。events 必须是 list 或 tuple，每个元素必须是长度 2 的 tuple；违反任一约束抛 ValueError。\n按 key 去重，但保留第一次出现的位置：返回值是按 key 首次出现顺序排列的 (key, payload) 元组列表，payload 取该 key 最后一次出现的值。不得修改输入。\n例如 dedupe_events([(\"a\", \"1\"), (\"b\", \"2\"), (\"a\", \"3\")]) == [(\"a\", \"3\"), (\"b\", \"2\")]。",
+    "entry_point": "dedupe_events",
+    "initial_output": "```python\ndef dedupe_events(events):\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n    order = []\n    last = {}\n    for item in events:\n        if not isinstance(item, tuple) or len(item) != 2:\n            raise ValueError(\"each element must be a 2-tuple\")\n        key, payload = item\n        if not isinstance(key, str) or not isinstance(payload, str):\n            raise ValueError(\"key and payload must be str\")\n        if key not in last:\n            order.append(key)\n        last[key] = payload\n    return [(key, last[key]) for key in order]\n```",
+    "final_output": "```python\ndef dedupe_events(events):\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n    order = []\n    last = {}\n    for item in events:\n        if not isinstance(item, tuple) or len(item) != 2:\n            raise ValueError(\"each element must be a 2-tuple\")\n        key, payload = item\n        if not isinstance(key, str) or not isinstance(payload, str):\n            raise ValueError(\"key and payload must be str\")\n        if key not in last:\n            order.append(key)\n        last[key] = payload\n    return [(key, last[key]) for key in order]\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "events 必须是 list 或 tuple，每个元素必须是长度 2 的 tuple；违反任一约束抛 ValueError。",
+        "reason": "元素是长度 3 的 tuple，违反长度 2 约束。",
+        "args": "([('a','1','x')],)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "key 与 payload 都必须是 str，否则抛 ValueError。",
+        "reason": "payload 为 int，非 str。",
+        "args": "([('a', 1)],)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "返回值是按 key 首次出现顺序排列的 (key, payload) 元组列表，payload 取该 key 最后一次出现的值。",
+        "reason": "重复 key 保留首次位置、取最后 payload。",
+        "args": "([('a','1'),('b','2'),('a','3')],)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "[('a', '3'), ('b', '2')]"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "规范要求每个元素必须是长度 2 的 tuple，长度 3 的 tuple 违反该约束，应抛 ValueError。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "规范要求 key 与 payload 都必须是 str，payload 为 int 违反约束，应抛 ValueError。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "按 key 首次出现顺序排列，重复 key 取最后一次 payload，输入得到 [('a','3'),('b','2')]，与规范一致。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115922,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115411,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116011,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "verified_interaction": {
+    "task": "实现 dedupe_events(events)，输入是由二元组 (key, payload) 组成的列表或元组，key 与 payload 都必须是 str，否则抛 ValueError。events 必须是 list 或 tuple，每个元素必须是长度 2 的 tuple；违反任一约束抛 ValueError。\n按 key 去重，但保留第一次出现的位置：返回值是按 key 首次出现顺序排列的 (key, payload) 元组列表，payload 取该 key 最后一次出现的值。不得修改输入。\n例如 dedupe_events([(\"a\", \"1\"), (\"b\", \"2\"), (\"a\", \"3\")]) == [(\"a\", \"3\"), (\"b\", \"2\")]。",
+    "entry_point": "dedupe_events",
+    "initial_output": "```python\ndef dedupe_events(events):\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n    order = []\n    last = {}\n    for item in events:\n        if not isinstance(item, tuple) or len(item) != 2:\n            raise ValueError(\"each element must be a 2-tuple\")\n        key, payload = item\n        if not isinstance(key, str) or not isinstance(payload, str):\n            raise ValueError(\"key and payload must be str\")\n        if key not in last:\n            order.append(key)\n        last[key] = payload\n    return [(key, last[key]) for key in order]\n```",
+    "final_output": "```python\ndef dedupe_events(events):\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n    order = []\n    last = {}\n    for item in events:\n        if not isinstance(item, tuple) or len(item) != 2:\n            raise ValueError(\"each element must be a 2-tuple\")\n        key, payload = item\n        if not isinstance(key, str) or not isinstance(payload, str):\n            raise ValueError(\"key and payload must be str\")\n        if key not in last:\n            order.append(key)\n        last[key] = payload\n    return [(key, last[key]) for key in order]\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "events 必须是 list 或 tuple，每个元素必须是长度 2 的 tuple；违反任一约束抛 ValueError。",
+        "reason": "元素是长度2的list而非tuple，违反元素必须是tuple的约束",
+        "args": "([[\"a\", \"1\"]],)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "key 与 payload 都必须是 str，否则抛 ValueError。",
+        "reason": "payload为int，违反payload必须是str",
+        "args": "([(\"a\", 1)],)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "按 key 去重，但保留第一次出现的位置：返回值是按 key 首次出现顺序排列的 (key, payload) 元组列表，payload 取该 key 最后一次出现的值。",
+        "reason": "重复key交错出现，检查首次位置顺序与最后payload的组合",
+        "args": "([(\"a\", \"1\"), (\"b\", \"2\"), (\"a\", \"3\"), (\"b\", \"4\")],)",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "[(\"a\", \"3\"), (\"b\", \"4\")]"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "规范明确要求每个元素必须是长度 2 的 tuple，输入元素为 list，违反约束，应抛 ValueError。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "规范要求 key 与 payload 都必须是 str，payload 为 int 违反约束，应抛 ValueError。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "按 key 首次出现顺序 a、b 排列，payload 取各自最后一次出现的值 3、4，结果正确。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115839,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.165429,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115959,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "discovery_strategy": "interaction_focus"
+      },
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "self_1": {
+    "feedback": "实现已正确，无需修改。\n\n逐项核对：\n\n- **输入容器类型**：`isinstance(events, (list, tuple))`，否则 `ValueError`。✓\n- **元素必须是长度 2 的 tuple**：`isinstance(item, tuple) and len(item) != 2` 检查，否则 `ValueError`。注意 list 元素（如 `[\"a\",\"1\"]`）会被拒绝，符合“必须是 tuple”的要求。✓\n- **key/payload 必须是 str**：分别用 `isinstance(..., str)` 检查，否则 `ValueError`。✓\n- **按 key 去重、保留首次出现位置**：`order` 只在 key 首次出现时追加。✓\n- **payload 取最后一次出现的值**：`last[key] = payload` 每次覆盖。✓\n- **返回类型**：列表推导生成 `(key, last[key])` 元组列表。✓\n- **不修改输入**：只读取 `events` 与 `item`，未做任何原地修改。✓\n- **示例**：`[(\"a\",\"1\"),(\"b\",\"2\"),(\"a\",\"3\")]` → `order=[\"a\",\"b\"]`，`last={\"a\":\"3\",\"b\":\"2\"}` → `[(\"a\",\"3\"),(\"b\",\"2\")]`。✓\n\n边界情况也成立：空 list/tuple 返回 `[]`；`bool` 不是 `str` 会被拒绝；子类 `str` 可通过（题目未禁止）；元素为长度 2 的 tuple 但含非 str 会抛 `ValueError`。\n\n无需修改。",
+    "output": "```python\ndef dedupe_events(events):\n    if not isinstance(events, (list, tuple)):\n        raise ValueError(\"events must be a list or tuple\")\n    order = []\n    last = {}\n    for item in events:\n        if not isinstance(item, tuple) or len(item) != 2:\n            raise ValueError(\"each element must be a 2-tuple\")\n        key, payload = item\n        if not isinstance(key, str) or not isinstance(payload, str):\n            raise ValueError(\"key and payload must be str\")\n        if key not in last:\n            order.append(key)\n        last[key] = payload\n    return [(key, last[key]) for key in order]\n```"
+  },
+  "grades": {
+    "direct": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116479,
+      "detail": "all trusted assertion tests completed"
+    },
+    "self_1": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.115783,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_default": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116136,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_interaction": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.115762,
+      "detail": "all trusted assertion tests completed"
+    }
+  },
+  "case_audit": {
+    "verified_default": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115421,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115492,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.11578,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    },
+    "verified_interaction": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115243,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115686,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115598,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    }
+  },
+  "mutants": {
+    "verified_default": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": true
+      },
+      {
+        "mutant": "清空输入列表",
+        "accepted_cases": 3,
+        "caught": true
+      }
+    ],
+    "verified_interaction": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": false
+      },
+      {
+        "mutant": "清空输入列表",
+        "accepted_cases": 3,
+        "caught": true
+      }
+    ]
+  }
+}

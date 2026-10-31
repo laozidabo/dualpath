@@ -1,0 +1,325 @@
+{
+  "id": "I001",
+  "initial": "```python\ndef allocate(amount, weights):\n    if type(amount) is not int or amount < 0:\n        raise ValueError(\"amount must be a non-negative integer\")\n    if not isinstance(weights, (list, tuple)) or len(weights) == 0:\n        raise ValueError(\"weights must be a non-empty list or tuple\")\n    for w in weights:\n        if type(w) is not int or w < 0:\n            raise ValueError(\"weights elements must be non-negative integers\")\n    total = sum(weights)\n    if total == 0:\n        raise ValueError(\"sum of weights must be positive\")\n    n = len(weights)\n    if amount == 0:\n        return [0] * n\n    base = [amount * w // total for w in weights]\n    remainders = [amount * w % total for w in weights]\n    remaining = amount - sum(base)\n    order = sorted(range(n), key=lambda i: (-remainders[i], i))\n    result = base[:]\n    for i in order[:remaining]:\n        result[i] += 1\n    return result\n```",
+  "self_1": {
+    "feedback": "实现已满足任务要求，无需修改。\n\n逐项核对：\n\n- **类型校验**：`type(amount) is not int` 排除 `bool`（`bool` 是 `int` 子类但 `type` 精确匹配），`weights` 用 `isinstance(..., (list, tuple))` 接受列表/元组，元素同样用 `type(w) is not int` 排除 `bool`。符合“bool 不是合法整数”。\n- **weights 之和为 0**：在 `amount == 0` 提前返回之前检查 `total == 0` 并抛 `ValueError`，因此即使 `amount` 为 0 也会抛错，符合要求。\n- **amount 为 0**：校验通过后返回 `[0] * n`，长度正确。\n- **最大余数法**：`base` 用 `amount*w//total`，余数用 `amount*w%total`；`remaining = amount - sum(base)` 即剩余整数个数；排序键 `(-remainders[i], i)` 实现余数降序、同余数下标升序；只对前 `remaining` 个加 1。正确。\n- **和等于 amount**：最大余数法保证 `remaining` 在 `[0, n)` 范围内（因为 `sum(amount*w % total) = amount*total - total*sum(base) = total*remaining`，且每个余数 `< total`，故 `remaining < n`），切片 `order[:remaining]` 不会越界，结果和恰为 `amount`。\n- **不修改输入**：`weights` 只读；`base[:]` 复制后再改，未改动 `base` 之外的结构，输入未被修改。\n- **示例**：`allocate(10, [1,1,1])`：`total=3`，`base=[3,3,3]`，余数全为 1，`remaining=1`，按下标优先给第 0 项加 1，得 `[4,3,3]`。符合。\n\n边界情况也成立：如 `weights=[0, 5]`、`amount=3` 时 `base=[0,3]`、余数 `[0,0]`、`remaining=0`，返回 `[0,3]`；`weights` 含 0 且 `total>0` 时不会误判。\n\n结论：实现正确，无需修改。",
+    "output": "```python\ndef allocate(amount, weights):\n    if type(amount) is not int or amount < 0:\n        raise ValueError(\"amount must be a non-negative integer\")\n    if not isinstance(weights, (list, tuple)) or len(weights) == 0:\n        raise ValueError(\"weights must be a non-empty list or tuple\")\n    for w in weights:\n        if type(w) is not int or w < 0:\n            raise ValueError(\"weights elements must be non-negative integers\")\n    total = sum(weights)\n    if total == 0:\n        raise ValueError(\"sum of weights must be positive\")\n    n = len(weights)\n    if amount == 0:\n        return [0] * n\n    base = [amount * w // total for w in weights]\n    remainders = [amount * w % total for w in weights]\n    remaining = amount - sum(base)\n    order = sorted(range(n), key=lambda i: (-remainders[i], i))\n    result = base[:]\n    for i in order[:remaining]:\n        result[i] += 1\n    return result\n```"
+  },
+  "verified_default": {
+    "task": "实现 allocate(amount, weights)。amount 是非负整数；weights 是非空列表或元组，元素全部是非负整数。\n先做输入校验：任一输入类型不符合要求（注意 bool 不是合法整数）或 weights 之和为 0 时抛 ValueError（即使 amount 为 0 也一样）。校验通过后，amount 为 0 时返回与 weights 等长的全 0 列表。\n否则按最大余数法分配：先给第 i 项 amount*weights[i]//total；再把剩下的 amount - sum(base) 个整数按余数 amount*weights[i]%total 从大到小各加 1，余数相同则下标小的优先。\n返回列表，长度与 weights 相同，元素之和必须等于 amount。不得修改输入。\n例如 allocate(10, [1, 1, 1]) == [4, 3, 3]。",
+    "entry_point": "allocate",
+    "initial_output": "```python\ndef allocate(amount, weights):\n    if type(amount) is not int or amount < 0:\n        raise ValueError(\"amount must be a non-negative integer\")\n    if not isinstance(weights, (list, tuple)) or len(weights) == 0:\n        raise ValueError(\"weights must be a non-empty list or tuple\")\n    for w in weights:\n        if type(w) is not int or w < 0:\n            raise ValueError(\"weights elements must be non-negative integers\")\n    total = sum(weights)\n    if total == 0:\n        raise ValueError(\"sum of weights must be positive\")\n    n = len(weights)\n    if amount == 0:\n        return [0] * n\n    base = [amount * w // total for w in weights]\n    remainders = [amount * w % total for w in weights]\n    remaining = amount - sum(base)\n    order = sorted(range(n), key=lambda i: (-remainders[i], i))\n    result = base[:]\n    for i in order[:remaining]:\n        result[i] += 1\n    return result\n```",
+    "final_output": "```python\ndef allocate(amount, weights):\n    if type(amount) is not int or amount < 0:\n        raise ValueError(\"amount must be a non-negative integer\")\n    if not isinstance(weights, (list, tuple)) or len(weights) == 0:\n        raise ValueError(\"weights must be a non-empty list or tuple\")\n    for w in weights:\n        if type(w) is not int or w < 0:\n            raise ValueError(\"weights elements must be non-negative integers\")\n    total = sum(weights)\n    if total == 0:\n        raise ValueError(\"sum of weights must be positive\")\n    n = len(weights)\n    if amount == 0:\n        return [0] * n\n    base = [amount * w // total for w in weights]\n    remainders = [amount * w % total for w in weights]\n    remaining = amount - sum(base)\n    order = sorted(range(n), key=lambda i: (-remainders[i], i))\n    result = base[:]\n    for i in order[:remaining]:\n        result[i] += 1\n    return result\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "任一输入类型不符合要求（注意 bool 不是合法整数）或 weights 之和为 0 时抛 ValueError（即使 amount 为 0 也一样）。",
+        "reason": "bool 不是合法整数，amount=True 应抛 ValueError。",
+        "args": "(True, [1, 1])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "任一输入类型不符合要求（注意 bool 不是合法整数）或 weights 之和为 0 时抛 ValueError（即使 amount 为 0 也一样）。",
+        "reason": "weights 含 bool 元素，类型不合法，应抛 ValueError。",
+        "args": "(5, [1, False])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "校验通过后，amount 为 0 时返回与 weights 等长的全 0 列表。",
+        "reason": "amount 为 0 且 weights 合法，返回等长全 0 列表。",
+        "args": "(0, [3, 5])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "[0, 0]"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "规范明确 bool 不是合法整数，amount=True 类型不合法，应在校验阶段抛 ValueError，与 weights 是否合法无关。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "weights 元素 False 是 bool，不是合法整数，任一输入类型不符合要求即抛 ValueError。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "amount=0 且 weights=[3,5] 合法（和不为 0），校验通过后按规则返回与 weights 等长的全 0 列表 [0,0]。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115966,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.1153,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115083,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "verified_interaction": {
+    "task": "实现 allocate(amount, weights)。amount 是非负整数；weights 是非空列表或元组，元素全部是非负整数。\n先做输入校验：任一输入类型不符合要求（注意 bool 不是合法整数）或 weights 之和为 0 时抛 ValueError（即使 amount 为 0 也一样）。校验通过后，amount 为 0 时返回与 weights 等长的全 0 列表。\n否则按最大余数法分配：先给第 i 项 amount*weights[i]//total；再把剩下的 amount - sum(base) 个整数按余数 amount*weights[i]%total 从大到小各加 1，余数相同则下标小的优先。\n返回列表，长度与 weights 相同，元素之和必须等于 amount。不得修改输入。\n例如 allocate(10, [1, 1, 1]) == [4, 3, 3]。",
+    "entry_point": "allocate",
+    "initial_output": "```python\ndef allocate(amount, weights):\n    if type(amount) is not int or amount < 0:\n        raise ValueError(\"amount must be a non-negative integer\")\n    if not isinstance(weights, (list, tuple)) or len(weights) == 0:\n        raise ValueError(\"weights must be a non-empty list or tuple\")\n    for w in weights:\n        if type(w) is not int or w < 0:\n            raise ValueError(\"weights elements must be non-negative integers\")\n    total = sum(weights)\n    if total == 0:\n        raise ValueError(\"sum of weights must be positive\")\n    n = len(weights)\n    if amount == 0:\n        return [0] * n\n    base = [amount * w // total for w in weights]\n    remainders = [amount * w % total for w in weights]\n    remaining = amount - sum(base)\n    order = sorted(range(n), key=lambda i: (-remainders[i], i))\n    result = base[:]\n    for i in order[:remaining]:\n        result[i] += 1\n    return result\n```",
+    "final_output": "```python\ndef allocate(amount, weights):\n    if type(amount) is not int or amount < 0:\n        raise ValueError(\"amount must be a non-negative integer\")\n    if not isinstance(weights, (list, tuple)) or len(weights) == 0:\n        raise ValueError(\"weights must be a non-empty list or tuple\")\n    for w in weights:\n        if type(w) is not int or w < 0:\n            raise ValueError(\"weights elements must be non-negative integers\")\n    total = sum(weights)\n    if total == 0:\n        raise ValueError(\"sum of weights must be positive\")\n    n = len(weights)\n    if amount == 0:\n        return [0] * n\n    base = [amount * w // total for w in weights]\n    remainders = [amount * w % total for w in weights]\n    remaining = amount - sum(base)\n    order = sorted(range(n), key=lambda i: (-remainders[i], i))\n    result = base[:]\n    for i in order[:remaining]:\n        result[i] += 1\n    return result\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "任一输入类型不符合要求（注意 bool 不是合法整数）或 weights 之和为 0 时抛 ValueError（即使 amount 为 0 也一样）",
+        "reason": "amount=0 且 weights 和为 0，两条规则同时触发，应抛 ValueError",
+        "args": "(0, [0, 0])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "余数相同则下标小的优先",
+        "reason": "weights 全相等时余数全相同，剩余名额按下标从小到大分配，验证相等余数优先级",
+        "args": "(10, [1, 1, 1])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "[4, 3, 3]"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "任一输入类型不符合要求（注意 bool 不是合法整数）",
+        "reason": "weights 含 bool，虽为 0/1 数值但 bool 不是合法整数，应抛 ValueError",
+        "args": "(5, [True, 1])",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "amount=0 且 weights 和为 0，规范明确即使 amount 为 0 也要在校验阶段抛 ValueError，符合规则。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "amount=10，weights=[1,1,1]，total=3，base 均为 3，余数均为 1，剩余 1 个名额按下标小优先给第 0 项，得到 [4,3,3]，与规范示例一致。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "weights 含 True，规范明确 bool 不是合法整数，应在输入校验时抛 ValueError。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115679,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115837,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.11528,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "discovery_strategy": "interaction_focus"
+      },
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "grades": {
+    "direct": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.117064,
+      "detail": "all trusted assertion tests completed"
+    },
+    "self_1": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116994,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_default": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.117165,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_interaction": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116884,
+      "detail": "all trusted assertion tests completed"
+    }
+  },
+  "case_audit": {
+    "verified_default": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.114961,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115297,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115061,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    },
+    "verified_interaction": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115174,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115693,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.116074,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    }
+  },
+  "mutants": {
+    "verified_default": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": false
+      },
+      {
+        "mutant": "余数按权重而非余数排序",
+        "accepted_cases": 3,
+        "caught": false
+      }
+    ],
+    "verified_interaction": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": true
+      },
+      {
+        "mutant": "余数按权重而非余数排序",
+        "accepted_cases": 3,
+        "caught": false
+      }
+    ]
+  }
+}

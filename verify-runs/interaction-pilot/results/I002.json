@@ -1,0 +1,325 @@
+{
+  "id": "I002",
+  "initial": "```python\nimport re\n\ndef compare_versions(a, b):\n    def parse(version):\n        if not isinstance(version, str):\n            raise ValueError(\"version must be a string\")\n        m = re.fullmatch(\n            r'(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)'\n            r'(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?'\n            r'(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            version\n        )\n        if not m:\n            raise ValueError(\"invalid version: %r\" % (version,))\n        major, minor, patch, prerelease, _build = m.groups()\n        pre = prerelease.split('.') if prerelease is not None else None\n        return (int(major), int(minor), int(patch), pre)\n\n    def cmp_ident(x, y):\n        x_num = x.isdigit()\n        y_num = y.isdigit()\n        if x_num and y_num:\n            xi, yi = int(x), int(y)\n            return (xi > yi) - (xi < yi)\n        if x_num:\n            return -1\n        if y_num:\n            return 1\n        return (x > y) - (x < y)\n\n    pa = parse(a)\n    pb = parse(b)\n\n    for i in range(3):\n        if pa[i] != pb[i]:\n            return 1 if pa[i] > pb[i] else -1\n\n    pre_a, pre_b = pa[3], pb[3]\n    if pre_a is None and pre_b is None:\n        return 0\n    if pre_a is None:\n        return 1\n    if pre_b is None:\n        return -1\n\n    for x, y in zip(pre_a, pre_b):\n        c = cmp_ident(x, y)\n        if c != 0:\n            return c\n\n    if len(pre_a) != len(pre_b):\n        return -1 if len(pre_a) < len(pre_b) else 1\n    return 0\n```",
+  "verified_default": {
+    "task": "实现 compare_versions(a, b)，比较两个语义化版本字符串，返回 -1、0 或 1。\n版本格式为 MAJOR.MINOR.PATCH，并可选地追加 -PRERELEASE 与 +BUILD；BUILD 与 PRERELEASE 使用相同的标识符字符集。MAJOR/MINOR/PATCH 是非负十进制整数，不允许前导 0（\"0\" 本身除外）。BUILD 被忽略，但若出现 + 则后面必须是非空的点分标识符。PRERELEASE 由点分标识符组成，标识符只含 ASCII 字母、数字和连字符且非空；纯数字标识符按数值比较，其他标识符（纯字母或字母数字混合）按 ASCII 字典序比较，纯数字标识符小于非纯数字标识符；逐项比较，前缀相同时标识符更少者更小；有 PRERELEASE 的版本小于没有 PRERELEASE 的版本。\n任何不合法的输入抛 ValueError。例如 compare_versions(\"1.0.0-alpha\", \"1.0.0\") == -1。",
+    "entry_point": "compare_versions",
+    "initial_output": "```python\nimport re\n\ndef compare_versions(a, b):\n    def parse(version):\n        if not isinstance(version, str):\n            raise ValueError(\"version must be a string\")\n        m = re.fullmatch(\n            r'(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)'\n            r'(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?'\n            r'(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            version\n        )\n        if not m:\n            raise ValueError(\"invalid version: %r\" % (version,))\n        major, minor, patch, prerelease, _build = m.groups()\n        pre = prerelease.split('.') if prerelease is not None else None\n        return (int(major), int(minor), int(patch), pre)\n\n    def cmp_ident(x, y):\n        x_num = x.isdigit()\n        y_num = y.isdigit()\n        if x_num and y_num:\n            xi, yi = int(x), int(y)\n            return (xi > yi) - (xi < yi)\n        if x_num:\n            return -1\n        if y_num:\n            return 1\n        return (x > y) - (x < y)\n\n    pa = parse(a)\n    pb = parse(b)\n\n    for i in range(3):\n        if pa[i] != pb[i]:\n            return 1 if pa[i] > pb[i] else -1\n\n    pre_a, pre_b = pa[3], pb[3]\n    if pre_a is None and pre_b is None:\n        return 0\n    if pre_a is None:\n        return 1\n    if pre_b is None:\n        return -1\n\n    for x, y in zip(pre_a, pre_b):\n        c = cmp_ident(x, y)\n        if c != 0:\n            return c\n\n    if len(pre_a) != len(pre_b):\n        return -1 if len(pre_a) < len(pre_b) else 1\n    return 0\n```",
+    "final_output": "```python\nimport re\n\ndef compare_versions(a, b):\n    def parse(version):\n        if not isinstance(version, str):\n            raise ValueError(\"version must be a string\")\n        m = re.fullmatch(\n            r'(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)'\n            r'(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?'\n            r'(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            version\n        )\n        if not m:\n            raise ValueError(\"invalid version: %r\" % (version,))\n        major, minor, patch, prerelease, _build = m.groups()\n        pre = prerelease.split('.') if prerelease is not None else None\n        return (int(major), int(minor), int(patch), pre)\n\n    def cmp_ident(x, y):\n        x_num = x.isdigit()\n        y_num = y.isdigit()\n        if x_num and y_num:\n            xi, yi = int(x), int(y)\n            return (xi > yi) - (xi < yi)\n        if x_num:\n            return -1\n        if y_num:\n            return 1\n        return (x > y) - (x < y)\n\n    pa = parse(a)\n    pb = parse(b)\n\n    for i in range(3):\n        if pa[i] != pb[i]:\n            return 1 if pa[i] > pb[i] else -1\n\n    pre_a, pre_b = pa[3], pb[3]\n    if pre_a is None and pre_b is None:\n        return 0\n    if pre_a is None:\n        return 1\n    if pre_b is None:\n        return -1\n\n    for x, y in zip(pre_a, pre_b):\n        c = cmp_ident(x, y)\n        if c != 0:\n            return c\n\n    if len(pre_a) != len(pre_b):\n        return -1 if len(pre_a) < len(pre_b) else 1\n    return 0\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "MAJOR/MINOR/PATCH 是非负十进制整数，不允许前导 0（\"0\" 本身除外）。",
+        "reason": "前导零的版本号不合法，应抛 ValueError。",
+        "args": "(\"01.0.0\", \"1.0.0\")",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "BUILD 被忽略，但若出现 + 则后面必须是非空的点分标识符。",
+        "reason": "加号后为空，违反非空要求，应抛 ValueError。",
+        "args": "(\"1.0.0+\", \"1.0.0\")",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "raises",
+          "type": "ValueError"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "有 PRERELEASE 的版本小于没有 PRERELEASE 的版本。",
+        "reason": "带预发布标识的版本应小于同核心版本的无预发布版本。",
+        "args": "(\"1.0.0-alpha\", \"1.0.0\")",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "-1"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "规范明确禁止 MAJOR/MINOR/PATCH 前导 0（\"0\" 除外），\"01.0.0\" 的 MAJOR 为 \"01\"，不合法，应抛 ValueError。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "规范规定若出现 + 则其后必须是非空的点分标识符；\"1.0.0+\" 加号后为空，不合法，应抛 ValueError。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "规范规定有 PRERELEASE 的版本小于无 PRERELEASE 的版本，\"1.0.0-alpha\" 与 \"1.0.0\" 核心相同，前者带预发布，故返回 -1。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115606,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115623,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115115,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "verified_interaction": {
+    "task": "实现 compare_versions(a, b)，比较两个语义化版本字符串，返回 -1、0 或 1。\n版本格式为 MAJOR.MINOR.PATCH，并可选地追加 -PRERELEASE 与 +BUILD；BUILD 与 PRERELEASE 使用相同的标识符字符集。MAJOR/MINOR/PATCH 是非负十进制整数，不允许前导 0（\"0\" 本身除外）。BUILD 被忽略，但若出现 + 则后面必须是非空的点分标识符。PRERELEASE 由点分标识符组成，标识符只含 ASCII 字母、数字和连字符且非空；纯数字标识符按数值比较，其他标识符（纯字母或字母数字混合）按 ASCII 字典序比较，纯数字标识符小于非纯数字标识符；逐项比较，前缀相同时标识符更少者更小；有 PRERELEASE 的版本小于没有 PRERELEASE 的版本。\n任何不合法的输入抛 ValueError。例如 compare_versions(\"1.0.0-alpha\", \"1.0.0\") == -1。",
+    "entry_point": "compare_versions",
+    "initial_output": "```python\nimport re\n\ndef compare_versions(a, b):\n    def parse(version):\n        if not isinstance(version, str):\n            raise ValueError(\"version must be a string\")\n        m = re.fullmatch(\n            r'(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)'\n            r'(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?'\n            r'(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            version\n        )\n        if not m:\n            raise ValueError(\"invalid version: %r\" % (version,))\n        major, minor, patch, prerelease, _build = m.groups()\n        pre = prerelease.split('.') if prerelease is not None else None\n        return (int(major), int(minor), int(patch), pre)\n\n    def cmp_ident(x, y):\n        x_num = x.isdigit()\n        y_num = y.isdigit()\n        if x_num and y_num:\n            xi, yi = int(x), int(y)\n            return (xi > yi) - (xi < yi)\n        if x_num:\n            return -1\n        if y_num:\n            return 1\n        return (x > y) - (x < y)\n\n    pa = parse(a)\n    pb = parse(b)\n\n    for i in range(3):\n        if pa[i] != pb[i]:\n            return 1 if pa[i] > pb[i] else -1\n\n    pre_a, pre_b = pa[3], pb[3]\n    if pre_a is None and pre_b is None:\n        return 0\n    if pre_a is None:\n        return 1\n    if pre_b is None:\n        return -1\n\n    for x, y in zip(pre_a, pre_b):\n        c = cmp_ident(x, y)\n        if c != 0:\n            return c\n\n    if len(pre_a) != len(pre_b):\n        return -1 if len(pre_a) < len(pre_b) else 1\n    return 0\n```",
+    "final_output": "```python\nimport re\n\ndef compare_versions(a, b):\n    def parse(version):\n        if not isinstance(version, str):\n            raise ValueError(\"version must be a string\")\n        m = re.fullmatch(\n            r'(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)'\n            r'(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?'\n            r'(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            version\n        )\n        if not m:\n            raise ValueError(\"invalid version: %r\" % (version,))\n        major, minor, patch, prerelease, _build = m.groups()\n        pre = prerelease.split('.') if prerelease is not None else None\n        return (int(major), int(minor), int(patch), pre)\n\n    def cmp_ident(x, y):\n        x_num = x.isdigit()\n        y_num = y.isdigit()\n        if x_num and y_num:\n            xi, yi = int(x), int(y)\n            return (xi > yi) - (xi < yi)\n        if x_num:\n            return -1\n        if y_num:\n            return 1\n        return (x > y) - (x < y)\n\n    pa = parse(a)\n    pb = parse(b)\n\n    for i in range(3):\n        if pa[i] != pb[i]:\n            return 1 if pa[i] > pb[i] else -1\n\n    pre_a, pre_b = pa[3], pb[3]\n    if pre_a is None and pre_b is None:\n        return 0\n    if pre_a is None:\n        return 1\n    if pre_b is None:\n        return -1\n\n    for x, y in zip(pre_a, pre_b):\n        c = cmp_ident(x, y)\n        if c != 0:\n            return c\n\n    if len(pre_a) != len(pre_b):\n        return -1 if len(pre_a) < len(pre_b) else 1\n    return 0\n```",
+    "status": "checks_passed",
+    "cases": [
+      {
+        "id": "C1",
+        "rule": "纯数字标识符按数值比较，其他标识符（纯字母或字母数字混合）按 ASCII 字典序比较，纯数字标识符小于非纯数字标识符",
+        "reason": "数字标识符与非数字标识符比较，同时数值比较与字典序规则共同作用",
+        "args": "(\"1.0.0-2\", \"1.0.0-10\")",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "-1"
+        }
+      },
+      {
+        "id": "C2",
+        "rule": "逐项比较，前缀相同时标识符更少者更小",
+        "reason": "前缀相同且标识符数量不同，同时数字标识符数值相等",
+        "args": "(\"1.0.0-alpha.1\", \"1.0.0-alpha.1.0\")",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "-1"
+        }
+      },
+      {
+        "id": "C3",
+        "rule": "BUILD 被忽略，但若出现 + 则后面必须是非空的点分标识符",
+        "reason": "BUILD 不同但被忽略，同时 PRERELEASE 存在决定大小关系",
+        "args": "(\"1.0.0-alpha+build.1\", \"1.0.0-alpha+build.2\")",
+        "kwargs": "{}",
+        "expect": {
+          "kind": "return",
+          "value": "0"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "C1",
+        "verdict": "accept",
+        "reason": "两个预发布标识符都是纯数字，按数值比较：2 < 10，因此返回 -1，符合规范。"
+      },
+      {
+        "id": "C2",
+        "verdict": "accept",
+        "reason": "预发布标识符逐项比较，前缀 alpha.1 相同，前者标识符更少，因此更小，返回 -1，符合规范。"
+      },
+      {
+        "id": "C3",
+        "verdict": "accept",
+        "reason": "BUILD 被忽略，两个版本预发布部分均为 alpha，因此相等，返回 0，符合规范。"
+      }
+    ],
+    "initial_checks": [
+      {
+        "id": "C1",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.116041,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C2",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115046,
+        "detail": "all trusted assertion tests completed"
+      },
+      {
+        "id": "C3",
+        "status": "pass",
+        "passed": true,
+        "duration_seconds": 0.115444,
+        "detail": "all trusted assertion tests completed"
+      }
+    ],
+    "repaired_checks": [],
+    "attempted_repair": "",
+    "events": [
+      {
+        "discovery_strategy": "interaction_focus"
+      },
+      {
+        "call": 1,
+        "stage": "[VERIFY_DISCOVER]",
+        "finish_reason": "stop"
+      },
+      {
+        "call": 2,
+        "stage": "[VERIFY_REVIEW]",
+        "finish_reason": "stop"
+      }
+    ],
+    "model_calls": 2,
+    "expectation_assurance": "model_reviewed_not_proven"
+  },
+  "self_1": {
+    "feedback": "分析候选实现与任务要求：\n\n1. **版本格式解析**：正则表达式 `(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)` 正确禁止前导 0（除 \"0\" 本身）。✓\n2. **PRERELEASE 与 BUILD 字符集**：`[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*` 匹配非空点分标识符，字符集正确。✓\n3. **BUILD 忽略但必须非空**：正则要求 `+` 后至少一个标识符，且 `_build` 被丢弃。✓\n4. **非法输入抛 ValueError**：`re.fullmatch` 失败时抛 ValueError；非字符串也抛 ValueError。✓\n5. **主版本比较**：逐项比较 major/minor/patch。✓\n6. **PRERELEASE 比较**：\n   - 纯数字标识符按数值比较：`int(x)` 比较。✓\n   - 非纯数字按 ASCII 字典序：Python 字符串比较即 ASCII 序（对 ASCII 字符）。✓\n   - 纯数字小于非纯数字：`x_num` 时返回 -1。✓\n   - 前缀相同时标识符更少者更小：长度比较。✓\n   - 有 PRERELEASE 小于无 PRERELEASE：`pre_a is None` 返回 1，`pre_b is None` 返回 -1。✓\n\n**边界情况检查**：\n\n- `\"1.0.0-alpha\"` vs `\"1.0.0\"` → -1 ✓\n- `\"1.0.0-alpha.1\"` vs `\"1.0.0-alpha\"` → 前缀相同，前者更长 → 1 ✓\n- `\"1.0.0-1\"` vs `\"1.0.0-alpha\"` → 数字 < 非数字 → -1 ✓\n- `\"1.0.0-01\"`：纯数字标识符 \"01\" 是否合法？任务说 PRERELEASE 标识符只含 ASCII 字母、数字和连字符且非空，**未禁止前导 0**（前导 0 限制只针对 MAJOR/MINOR/PATCH）。候选实现允许 \"01\"，并按数值 1 比较。这符合任务描述。✓\n- `\"1.0.0+\"`：正则要求 `+` 后非空 → 不匹配 → ValueError ✓\n- `\"1.0.0-alpha+\"`：同上 → ValueError ✓\n- `\"1.0.0-alpha..1\"`：正则不允许空标识符 → ValueError ✓\n- `\"1.0.0-\"`：正则要求 `-` 后非空 → ValueError ✓\n- `\"01.0.0\"`：前导 0 → ValueError ✓\n- `\"1.0.0-alpha+001\"`：BUILD 允许前导 0（任务未限制 BUILD 标识符前导 0），且被忽略 ✓\n- `\"1.0.0-alpha.1\"` vs `\"1.0.0-alpha.01\"`：两者纯数字，数值均为 1 → 相等。任务说纯数字按数值比较，故相等合理。✓\n\n**潜在问题**：\n\n- `x.isdigit()`：对于 ASCII 数字字符集，`isdigit()` 对 `\"0\"`-`\"9\"` 返回 True。但 `isdigit()` 对某些 Unicode 数字也返回 True——然而正则已限制标识符只含 `[0-9A-Za-z-]`，所以标识符中只可能是 ASCII 数字。✓\n- 字符串比较 `x > y`：标识符只含 ASCII 字符，Python 的字符串比较按 Unicode 码点，对 ASCII 即 ASCII 序。✓\n- 空字符串输入：`re.fullmatch` 失败 → ValueError ✓\n- 非字符串输入：显式检查 → ValueError ✓\n\n**结论**：实现正确满足任务所有明确要求，未发现边界情况错误或实现缺陷。无需修改。\n\n无需修改。",
+    "output": "```python\nimport re\n\ndef compare_versions(a, b):\n    def parse(version):\n        if not isinstance(version, str):\n            raise ValueError(\"version must be a string\")\n        m = re.fullmatch(\n            r'(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)'\n            r'(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?'\n            r'(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?',\n            version\n        )\n        if not m:\n            raise ValueError(\"invalid version: %r\" % (version,))\n        major, minor, patch, prerelease, _build = m.groups()\n        pre = prerelease.split('.') if prerelease is not None else None\n        return (int(major), int(minor), int(patch), pre)\n\n    def cmp_ident(x, y):\n        x_num = x.isdigit()\n        y_num = y.isdigit()\n        if x_num and y_num:\n            xi, yi = int(x), int(y)\n            return (xi > yi) - (xi < yi)\n        if x_num:\n            return -1\n        if y_num:\n            return 1\n        return (x > y) - (x < y)\n\n    pa = parse(a)\n    pb = parse(b)\n\n    for i in range(3):\n        if pa[i] != pb[i]:\n            return 1 if pa[i] > pb[i] else -1\n\n    pre_a, pre_b = pa[3], pb[3]\n    if pre_a is None and pre_b is None:\n        return 0\n    if pre_a is None:\n        return 1\n    if pre_b is None:\n        return -1\n\n    for x, y in zip(pre_a, pre_b):\n        c = cmp_ident(x, y)\n        if c != 0:\n            return c\n\n    if len(pre_a) != len(pre_b):\n        return -1 if len(pre_a) < len(pre_b) else 1\n    return 0\n```"
+  },
+  "grades": {
+    "direct": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116456,
+      "detail": "all trusted assertion tests completed"
+    },
+    "self_1": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116243,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_default": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116122,
+      "detail": "all trusted assertion tests completed"
+    },
+    "verified_interaction": {
+      "status": "pass",
+      "passed": true,
+      "duration_seconds": 0.116166,
+      "detail": "all trusted assertion tests completed"
+    }
+  },
+  "case_audit": {
+    "verified_default": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115082,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.165802,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115592,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    },
+    "verified_interaction": {
+      "accepted": 3,
+      "cases": [
+        {
+          "id": "C1",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115415,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C2",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.116054,
+            "detail": "all trusted assertion tests completed"
+          }
+        },
+        {
+          "id": "C3",
+          "reference_check": {
+            "status": "pass",
+            "passed": true,
+            "duration_seconds": 0.115542,
+            "detail": "all trusted assertion tests completed"
+          }
+        }
+      ]
+    }
+  },
+  "mutants": {
+    "verified_default": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": true
+      },
+      {
+        "mutant": "混合标识符按字符串序比较",
+        "accepted_cases": 3,
+        "caught": false
+      }
+    ],
+    "verified_interaction": [
+      {
+        "mutant": "单规则偏差",
+        "accepted_cases": 3,
+        "caught": true
+      },
+      {
+        "mutant": "混合标识符按字符串序比较",
+        "accepted_cases": 3,
+        "caught": false
+      }
+    ]
+  }
+}
