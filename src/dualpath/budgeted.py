@@ -6,15 +6,15 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timezone
-from decimal import Decimal, ROUND_CEILING
 import fcntl
 import json
 import os
-from pathlib import Path
 import time
 import urllib.error
 import urllib.request
+from datetime import datetime, timezone
+from decimal import ROUND_CEILING, Decimal
+from pathlib import Path
 
 from .verification import Completion
 

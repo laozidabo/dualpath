@@ -5,11 +5,16 @@ from unittest.mock import patch
 
 import pytest
 
-from dualpath.verification import (
-    Completion, ProtocolError, VerifiedDualPath, literal, parse_cases,
-    parse_decisions, strict_json,
-)
 from dualpath.sandbox import sandbox_support
+from dualpath.verification import (
+    Completion,
+    ProtocolError,
+    VerifiedDualPath,
+    literal,
+    parse_cases,
+    parse_decisions,
+    strict_json,
+)
 
 TASK = "实现 abs_value(x)，x 是整数。返回整数的绝对值。"
 INITIAL = "def abs_value(x): return x"
@@ -22,7 +27,14 @@ def test_json_exponent_overflow_rejected():
 
 
 def case(id="C1", arg=-2, expected=2):
-    return {"id": id, "rule": "返回整数的绝对值", "reason": "负数边界", "args": repr((arg,)), "kwargs": "{}", "expect": {"kind": "return", "value": repr(expected)}}
+    return {
+        "id": id,
+        "rule": "返回整数的绝对值",
+        "reason": "负数边界",
+        "args": repr((arg,)),
+        "kwargs": "{}",
+        "expect": {"kind": "return", "value": repr(expected)},
+    }
 
 
 def discovery(rows=None):
@@ -41,7 +53,12 @@ class Fake:
     async def complete(self, system, user):
         stage = system.splitlines()[0]
         self.requests.append((stage, user))
-        default = {"[VERIFY_DIRECT]": INITIAL, "[VERIFY_DISCOVER]": discovery(), "[VERIFY_REVIEW]": review(), "[VERIFY_REPAIR]": REPAIRED}
+        default = {
+            "[VERIFY_DIRECT]": INITIAL,
+            "[VERIFY_DISCOVER]": discovery(),
+            "[VERIFY_REVIEW]": review(),
+            "[VERIFY_REPAIR]": REPAIRED,
+        }
         response = self.responses.get(stage, default[stage])
         if isinstance(response, list):
             response = response.pop(0)
@@ -63,7 +80,17 @@ def test_complete_json_fence():
     assert strict_json('```json\n{"cases": []}\n```') == {"cases": []}
 
 
-@pytest.mark.parametrize("text", ["__import__('os').getcwd()", "[0] * 100000000", "set()", "1e999", "b'bytes'", "{" + "'x':" * 200 + "1}"])
+@pytest.mark.parametrize(
+    "text",
+    [
+        "__import__('os').getcwd()",
+        "[0] * 100000000",
+        "set()",
+        "1e999",
+        "b'bytes'",
+        "{" + "'x':" * 200 + "1}",
+    ],
+)
 def test_literal_cannot_execute_or_expand(text):
     with pytest.raises(ProtocolError):
         literal(text)

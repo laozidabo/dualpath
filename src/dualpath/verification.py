@@ -7,15 +7,15 @@ from __future__ import annotations
 
 import ast
 import asyncio
-from dataclasses import asdict, dataclass, field
 import json
 import keyword
 import math
 import re
+from dataclasses import asdict, dataclass, field
 from typing import Protocol
 
+from .llm import JsonProtocolError, parse_strict_json
 from .sandbox import extract_code, grade, sandbox_support
-
 
 DIRECT = """[VERIFY_DIRECT]
 实现用户给定的 Python 函数，只使用标准库。严格遵守题目，不补充未规定的规则。
@@ -59,8 +59,7 @@ class Model(Protocol):
     async def complete(self, system: str, user: str) -> str | Completion: ...
 
 
-class ProtocolError(ValueError):
-    pass
+ProtocolError = JsonProtocolError
 
 
 class CallLimit(RuntimeError):
@@ -69,36 +68,7 @@ class CallLimit(RuntimeError):
 
 def strict_json(text: str):
     """仅接受完整 JSON 或一个完整围栏，绝不从截断数组抢救子对象。"""
-    if not isinstance(text, str) or len(text.encode()) > 32_768:
-        raise ProtocolError("JSON 文本过长或类型错误")
-    text = text.strip()
-    if text.startswith("```"):
-        match = re.fullmatch(r"```(?:json)?\s*\n(.*?)\n```", text, re.DOTALL | re.IGNORECASE)
-        if not match:
-            raise ProtocolError("不完整的 JSON 围栏")
-        text = match.group(1)
-
-    def pairs(items):
-        result = {}
-        for key, value in items:
-            if key in result:
-                raise ProtocolError("重复的 JSON 键")
-            result[key] = value
-        return result
-
-    def constant(_):
-        raise ProtocolError("非有限 JSON 数字")
-
-    def finite_float(text):
-        number = float(text)
-        if not math.isfinite(number):
-            raise ProtocolError("非有限 JSON 数字")
-        return number
-
-    try:
-        return json.loads(text, object_pairs_hook=pairs, parse_constant=constant, parse_float=finite_float)
-    except (ValueError, RecursionError) as error:
-        raise ProtocolError("不是完整且唯一的 JSON 文档") from error
+    return parse_strict_json(text)
 
 
 def literal(text: str):
@@ -157,14 +127,23 @@ class Case:
                        "else:\n    raise AssertionError('expected exception was not raised')\nassert True\n")
         else:
             expected = literal(self.expect["value"])
-            source += (f"_dp_actual = {call}\n_dp_expected = {expected!r}\n"
-                       "assert _dp_actual == _dp_expected, ('unexpected result', repr(_dp_actual)[:1000], repr(_dp_expected)[:1000])\n")
+            source += (
+                f"_dp_actual = {call}\n"
+                f"_dp_expected = {expected!r}\n"
+                "assert _dp_actual == _dp_expected, ('unexpected result', "
+                "repr(_dp_actual)[:1000], repr(_dp_expected)[:1000])\n"
+            )
         return source
 
 
 def parse_cases(text: str, task: str, max_cases: int) -> list[Case]:
     data = strict_json(text)
-    if not isinstance(data, dict) or set(data) != {"cases"} or not isinstance(data["cases"], list) or len(data["cases"]) > max_cases:
+    if (
+        not isinstance(data, dict)
+        or set(data) != {"cases"}
+        or not isinstance(data["cases"], list)
+        or len(data["cases"]) > max_cases
+    ):
         raise ProtocolError("反例清单结构错误或超过数量限制")
     cases, ids = [], set()
     for row in data["cases"]:
@@ -185,7 +164,12 @@ def parse_cases(text: str, task: str, max_cases: int) -> list[Case]:
             raise ProtocolError("预期结构错误")
         if expectation.get("kind") == "return" and set(expectation) == {"kind", "value"}:
             literal(expectation["value"])
-        elif expectation.get("kind") == "raises" and set(expectation) == {"kind", "type"} and isinstance(expectation["type"], str) and expectation["type"] in EXCEPTIONS:
+        elif (
+            expectation.get("kind") == "raises"
+            and set(expectation) == {"kind", "type"}
+            and isinstance(expectation["type"], str)
+            and expectation["type"] in EXCEPTIONS
+        ):
             pass
         else:
             raise ProtocolError("预期结构或异常类型错误")
@@ -253,7 +237,12 @@ class VerifiedDualPath:
     async def run(self, task: str, entry_point: str, *, initial: str | None = None) -> VerificationResult:
         if not isinstance(task, str) or not task.strip() or len(task.encode()) > 32_768:
             raise ValueError("任务为空或过长")
-        if not isinstance(entry_point, str) or not entry_point.isidentifier() or keyword.iskeyword(entry_point) or entry_point.startswith("_"):
+        if (
+            not isinstance(entry_point, str)
+            or not entry_point.isidentifier()
+            or keyword.iskeyword(entry_point)
+            or entry_point.startswith("_")
+        ):
             raise ValueError("entry_point 必须是公开 Python 函数名")
         if initial is not None and not isinstance(initial, str):
             raise TypeError("initial 必须是文本")
@@ -271,7 +260,13 @@ class VerifiedDualPath:
                 response = Completion(raw) if isinstance(raw, str) else raw
                 if not isinstance(response, Completion) or not isinstance(response.text, str):
                     raise ProtocolError("模型返回类型错误")
-                result.events.append({"call": number, "stage": system.splitlines()[0], "finish_reason": response.finish_reason})
+                result.events.append(
+                    {
+                        "call": number,
+                        "stage": system.splitlines()[0],
+                        "finish_reason": response.finish_reason,
+                    }
+                )
                 if response.finish_reason not in {"stop", "unknown"}:
                     raise ProtocolError("模型响应未完整结束")
                 return response.text
@@ -284,10 +279,22 @@ class VerifiedDualPath:
             prompt = INTERACTION_DISCOVER if self.interaction_focus else DISCOVER
             for attempt in range(self.discovery_retries + 1):
                 try:
-                    text = await complete(prompt.format(max_cases=self.max_cases), json.dumps({"task": task, "entry_point": entry_point, "format_retry": attempt > 0}, ensure_ascii=False))
+                    text = await complete(
+                        prompt.format(max_cases=self.max_cases),
+                        json.dumps(
+                            {"task": task, "entry_point": entry_point, "format_retry": attempt > 0},
+                            ensure_ascii=False,
+                        ),
+                    )
                     return parse_cases(text, task, self.max_cases)
                 except ProtocolError:
-                    result.events.append({"stage": "discovery_parse", "attempt": attempt + 1, "outcome": "invalid_or_truncated"})
+                    result.events.append(
+                        {
+                            "stage": "discovery_parse",
+                            "attempt": attempt + 1,
+                            "outcome": "invalid_or_truncated",
+                        }
+                    )
                     if attempt == self.discovery_retries:
                         raise
 
@@ -349,7 +356,18 @@ class VerifiedDualPath:
             result.status = "checks_passed"
             return result
         try:
-            result.attempted_repair = await complete(REPAIR, json.dumps({"task": task, "candidate": draft, "accepted_cases": [asdict(c) for c in accepted], "observations": result.initial_checks}, ensure_ascii=False))
+            result.attempted_repair = await complete(
+                REPAIR,
+                json.dumps(
+                    {
+                        "task": task,
+                        "candidate": draft,
+                        "accepted_cases": [asdict(c) for c in accepted],
+                        "observations": result.initial_checks,
+                    },
+                    ensure_ascii=False,
+                ),
+            )
         except Exception:
             result.status = "repair_unavailable"
             return result

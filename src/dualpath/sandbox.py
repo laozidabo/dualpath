@@ -17,7 +17,6 @@ import functools
 import json
 import math
 import os
-from pathlib import Path
 import re
 import secrets
 import shutil
@@ -25,8 +24,8 @@ import signal
 import subprocess
 import tempfile
 import time
+from pathlib import Path
 from typing import Any
-
 
 MEMORY_LIMIT_BYTES = 512 * 1024 * 1024
 OUTPUT_LIMIT_BYTES = 1024 * 1024
@@ -106,9 +105,8 @@ def sandbox_support() -> dict[str, Any]:
         return {"supported": False, "detail": "sandbox_unsupported: bwrap or /usr/bin/python3 is missing"}
     try:
         command = _sandbox_command(bwrap, None, [_PYTHON, "-I", "-c", "print('dualpath-sandbox-ready')"])
-        result = subprocess.run(command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, env={}, timeout=5, close_fds=True,
-                                start_new_session=True)
+        result = subprocess.run(command, stdin=subprocess.DEVNULL, capture_output=True,
+                                env={}, timeout=5, close_fds=True, start_new_session=True)
         if result.returncode != 0 or result.stdout.strip() != b"dualpath-sandbox-ready":
             diagnostic = result.stderr.decode("utf-8", errors="replace")[:2000]
             return {"supported": False, "detail": f"sandbox_unsupported: probe failed: {diagnostic}"}
@@ -155,7 +153,8 @@ try:
         if count:
             result = unittest.TextTestRunner(stream=sink, verbosity=0).run(suite)
             successful = result.wasSuccessful() and result.testsRun > 0 and len(result.skipped) < result.testsRun
-            detail = {{"tests_run": result.testsRun, "failures": len(result.failures), "errors": len(result.errors), "skipped": len(result.skipped)}}
+            detail = {{"tests_run": result.testsRun, "failures": len(result.failures),
+                     "errors": len(result.errors), "skipped": len(result.skipped)}}
             if result.failures or result.errors:
                 detail["first_failure"] = (result.failures + result.errors)[0][1][-6000:]
             _finish("pass" if successful else "fail", detail)
@@ -233,6 +232,9 @@ def grade(code: str, tests: str, timeout: float = 5) -> dict[str, Any]:
                 return outcome("timeout", "CPU time limit exceeded")
             if "bwrap:" in output:
                 return outcome("infrastructure_error", "sandbox startup/execution failed: " + output[-2000:])
-            return outcome("fail", f"candidate exited without a valid completed-test result (exit {returncode}): " + output[-2000:])
+            return outcome(
+                "fail",
+                f"candidate exited without a valid completed-test result (exit {returncode}): " + output[-2000:],
+            )
     except (OSError, RuntimeError, subprocess.SubprocessError) as error:
         return outcome("infrastructure_error", f"sandbox execution error: {type(error).__name__}: {error}")

@@ -1,0 +1,63 @@
+name: Bug 报告
+description: 报告可复现的错误或不一致行为
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请勿在 Issue 中粘贴 API Key、完整请求头或其他机密信息。
+        安全问题请按 [SECURITY.md](../blob/main/SECURITY.md) 私下报告。
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 发生了什么
+      description: 实际行为与预期行为。
+      placeholder: 运行命令、观察到的问题、期望的结果。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 尽量给出最小可复现命令或代码。
+      placeholder: |
+        1. 安装方式
+        2. 执行的命令
+        3. 输出或错误信息
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: dualpath --version 或提交哈希。
+      placeholder: 例如 0.2.0 / 64e5c6a
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: 相关命令
+      options:
+        - review
+        - verify
+        - run（legacy）
+        - 其他 / 不确定
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 环境
+      description: 操作系统、Python 版本、是否安装 bubblewrap；不要包含密钥。
+      placeholder: 例如 Ubuntu 24.04、Python 3.12、bubblewrap 0.9.0
+    validations:
+      required: false
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: 确认
+      options:
+        - label: 我确认内容中不含真实 API Key 或私密材料
+          required: true

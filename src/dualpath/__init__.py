@@ -1,11 +1,23 @@
-"""DualPath：直接解决与错误路线并行推进，最终共同汇聚。"""
+"""DualPath：失败先行、证据驱动的任务校验框架。"""
 
-from .models import ErrorPathResult, Evidence, Problem, RunResult, classify_problems
+from .models import (
+    ErrorPathResult,
+    Evidence,
+    Finding,
+    Problem,
+    ReviewResult,
+    RunResult,
+    classify_problems,
+)
 from .orchestrator import DualPath
-from .verification import Completion, VerifiedDualPath, VerificationResult
+from .review import ReviewEngine
+from .verification import Completion, VerificationResult, VerifiedDualPath
 
 __all__ = [
     "DualPath",
+    "ReviewEngine",
+    "ReviewResult",
+    "Finding",
     "VerifiedDualPath",
     "VerificationResult",
     "Completion",
@@ -16,4 +28,4 @@ __all__ = [
     "classify_problems",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

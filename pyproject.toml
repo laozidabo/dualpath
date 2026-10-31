@@ -4,13 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dualpath-ai"
-version = "0.1.0"
-description = "直接解决与错误路线并行推进，问题按概率分级，最终共同汇聚的 AI 任务执行框架"
+version = "0.2.0"
+description = "失败先行、证据驱动的 AI 任务审查与代码验证框架"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name = "DualPath contributors"}]
-keywords = ["ai-agents", "dual-path", "deepseek", "error-exploration"]
+keywords = [
+  "ai-agents",
+  "dual-path",
+  "deepseek",
+  "error-exploration",
+  "verification",
+  "counterexample",
+  "failure-first",
+]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "License :: OSI Approved :: MIT License",
@@ -18,6 +26,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
   "openai>=1.0.0",
@@ -28,7 +37,12 @@ dependencies = [
 dev = [
   "pytest>=8.0.0",
   "pytest-asyncio>=0.23.0",
+  "ruff>=0.6.0",
 ]
+
+[project.urls]
+Repository = "https://github.com/laozidabo/dualpath"
+Issues = "https://github.com/laozidabo/dualpath/issues"
 
 [project.scripts]
 dualpath = "dualpath.cli:main"
@@ -40,3 +54,13 @@ where = ["src"]
 testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+# experiments/ 是冻结的复现证据，文件散列被 freeze.json 和 PUBLICATION_SHA256SUMS 固定，
+# 不应为了通过风格检查而改写；其余目录为生成物或隔离环境。
+exclude = [".git", "venv", "artifacts", "verify-runs", "experiments"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
