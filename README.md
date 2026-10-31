@@ -1,20 +1,22 @@
 # DualPath
 
-[English](README.en.md) | 中文
+English | [中文](README.zh-CN.md)
 
-失败先行、证据驱动的 AI 任务审查与验证工具。
+Failure-first, evidence-driven task review and verification for AI agents.
 
-v0.2 不再用概率或风险等级描述模型猜测，而是要求每条失败项都尽量带上可核对的原文依据和可检验的信号：
+v0.2 no longer describes model guesses with probabilities or risk levels. Instead, every failure item should carry a quote that can be checked against the source material and a signal that can be tested:
 
-- `dualpath review`：面向通用任务，先生成草稿，再独立列出失败清单并逐条审阅；
-- `dualpath verify`：面向 Python 函数，独立提出反例、盲审预期值、在隔离沙箱中执行；
-- `dualpath run`：旧的双线路 + 概率分级模式，保留但已弃用，计划在 v0.3 移除。
+- `dualpath review`: for general tasks. It writes a draft first, then independently lists failure modes and reviews them one by one.
+- `dualpath verify`: for Python functions. It independently proposes counterexamples, blind-reviews the expected values, and runs them in an isolated sandbox.
+- `dualpath run`: the legacy dual-path + probability mode. It is kept for compatibility but deprecated, and is planned for removal in v0.3.
 
-两轮小样本实验的结论是克制的：目前没有证据表明 DualPath 或验证模式优于普通自检。完整记录见 [实验与成果索引](reports/README.md)。
+The results of the two small experiments are deliberately modest: there is currently no evidence that DualPath or the verification mode beats an ordinary self-check. See the [experiment index](reports/README.md) for the full records.
 
-## 快速开始
+> Detailed documentation (`docs/*.md`, `reports/*.md`, `CHANGELOG.md`, `CONTRIBUTING.md`) is currently written in Chinese. This page is the English default; the Chinese version is [`README.zh-CN.md`](README.zh-CN.md).
 
-要求 Python 3.10 或更高版本，以及可用的 DeepSeek API Key。
+## Quick start
+
+Requirements: Python 3.10 or newer, and a working DeepSeek API key.
 
 ```bash
 git clone https://github.com/laozidabo/dualpath.git
@@ -22,22 +24,23 @@ cd dualpath
 python -m venv venv
 venv/bin/python -m pip install -e ".[dev]"
 
-# 方式一：环境变量
-export DEEPSEEK_API_KEY="你的 DeepSeek API Key"
+# Option 1: environment variable
+export DEEPSEEK_API_KEY="your DeepSeek API key"
 
-# 方式二：写入当前工作目录的 .env（程序启动时自动读取）
+# Option 2: put it in .env in the current working directory
+# (the program loads it at startup)
 ```
 
 ```bash
-venv/bin/dualpath review "为一个开源 Python 项目设计并实现命令行待办事项管理器"
+venv/bin/dualpath review "Design and implement a command-line todo manager for an open-source Python project"
 ```
 
-`review` 和 `verify` 默认使用 `deepseek-flash`，可通过 `--model` 或环境变量覆盖。程序启动时读取**当前工作目录**的 `.env`，只补充缺失的环境变量，不覆盖 shell 中已有的同名变量。不要将真实密钥写进命令行参数或提交到仓库，参见 [SECURITY.md](SECURITY.md)。
+`review` and `verify` use `deepseek-flash` by default; override it with `--model` or environment variables. At startup the program reads `.env` from the **current working directory** and only fills in missing environment variables; it never overrides variables already set in the shell. Do not put real keys on the command line or commit them to the repository; see [SECURITY.md](SECURITY.md).
 
-## review：通用任务的失败清单
+## review: a failure list for general tasks
 
 ```bash
-venv/bin/dualpath review "为下面的接口写一份错误处理规范：……" \
+venv/bin/dualpath review "Write an error-handling spec for the following API: ..." \
   --context docs/api.md \
   --context examples/response.json \
   --max-findings 5 \
@@ -45,159 +48,159 @@ venv/bin/dualpath review "为下面的接口写一份错误处理规范：……
   --markdown review.md
 ```
 
-一次 review 的执行过程：
+A review run goes through four steps:
 
-1. 草稿线路直接完成用户任务；
-2. 失败发现线路只阅读任务和 `--context` 提供的资料，提出最多 `--max-findings` 条具体失败模式；
-3. 独立审阅线路判断每条失败模式是否有原文支持、检查项是否可用，给出 `supported`、`ambiguous` 或 `rejected`；
-4. 只有被支持的失败模式会交给修正线路整合进最终结果。
+1. The draft line completes the task directly.
+2. The failure-probe line reads only the task and the material passed via `--context`, and proposes at most `--max-findings` concrete failure modes.
+3. An independent review line decides whether each failure mode is supported by the source text and whether its check is usable, and returns `supported`, `ambiguous` or `rejected`.
+4. Only supported failure modes are handed to the repair line and merged into the final result.
 
-一次 review 最多发起 4 次模型调用（草稿、发现、审阅各一次；有被支持的失败模式时再加一次修正）。没有 supported finding 时为 3 次；失败发现阶段遇到 JSON 格式问题时会重问一次，最多 5 次；返回空清单时只调用 2 次（草稿、发现）。默认产出 5 条以内的 finding，不输出概率、百分比或风险等级。
+A review makes at most 4 model calls (draft, probe, review, and one repair call only when a supported failure mode exists). It makes 3 calls when no failure mode is supported, and 2 calls when the probe returns an empty list. If the probe returns malformed JSON it is asked once more, so the worst case is 5 calls. By default it produces at most 5 findings and never outputs probabilities, percentages or risk levels.
 
-### 参数
+### Parameters
 
-| 参数 | 说明 |
+| Parameter | Description |
 | --- | --- |
-| `--context FILE` | 附加任务资料，可重复；单个文件不超过 32 KiB、合计不超过 64 KiB；finding 的 `rule_quote` 必须出现在任务或这些资料中 |
-| `--max-findings N` | 最多保留的失败模式数量，默认 5，允许 1–10 |
-| `--provider` | `deepseek`（默认）或 `openai-compatible` |
-| `--model` | 模型名称 |
-| `--api-key` | 不推荐；优先使用环境变量或 `.env` |
-| `--base-url` | 覆盖 API 地址 |
-| `--json PATH` | 保存完整记录（任务、草稿、findings、最终结果、调用次数） |
-| `--markdown PATH` | 保存可阅读版本 |
-| `--quiet` | 隐藏过程输出 |
+| `--context FILE` | Additional task material; repeatable. At most 32 KiB per file and 64 KiB in total. A finding's `rule_quote` must appear in the task or in this material. |
+| `--max-findings N` | Maximum number of failure modes to keep. Default 5, allowed range 1-10. |
+| `--provider` | `deepseek` (default) or `openai-compatible`. |
+| `--model` | Model name. |
+| `--api-key` | Not recommended; prefer environment variables or `.env`. |
+| `--base-url` | Override the API base URL. |
+| `--json PATH` | Save the full record (task, draft, findings, final output, call count). |
+| `--markdown PATH` | Save a human-readable version. |
+| `--quiet` | Hide progress output. |
 
-### 输出与状态
+### Output and statuses
 
-每条 finding 包含：`id`、`title`、`mechanism`、`trigger`、`rule_quote`、`rule_source`、`check_kind`、`check`、`expected_signal`、`status`、`review_reason`。其中：
+Every finding contains: `id`, `title`, `mechanism`, `trigger`, `rule_quote`, `rule_source`, `check_kind`, `check`, `expected_signal`, `status` and `review_reason`. Specifically:
 
-- `rule_quote` 必须是任务或 context 中的连续原文片段（比较时归一化空白），由程序校验；
-- `check_kind` 为 `executable`（可执行检查）或 `manual`（需要人工确认）；
-- `status` 为 `supported`（原文支持且检查可用）、`ambiguous`（存在歧义）或 `rejected`（不支持或不可用）。
+- `rule_quote` must be a continuous fragment of the task or of a `--context` file (compared after whitespace normalization); the program validates this.
+- `check_kind` is `executable` (a check that can be run) or `manual` (requires human confirmation).
+- `status` is `supported` (the source text supports it and the check is usable), `ambiguous` (the rules are ambiguous) or `rejected` (unsupported or unusable).
 
-运行状态：
+Run statuses:
 
-| 状态 | 含义 |
+| Status | Meaning |
 | --- | --- |
-| `completed` | 完成审阅并产出最终结果 |
-| `no_findings` | 没有发现满足证据条件的失败模式，采用草稿 |
-| `draft_only` | 没有获得支持的失败模式，采用草稿 |
-| `probe_failed` | 失败发现阶段不可用，保留草稿 |
-| `review_failed` | 审阅阶段不可用，保留草稿 |
-| `model_failed` | 草稿阶段不可用，没有最终结果 |
+| `completed` | Review finished and produced a final result. |
+| `no_findings` | No failure mode met the evidence requirement; the draft is used. |
+| `draft_only` | No failure mode was supported; the draft is used. |
+| `probe_failed` | The failure-probe stage was unavailable; the draft is kept. |
+| `review_failed` | The review stage was unavailable; the draft is kept. |
+| `model_failed` | Even the draft stage was unavailable; there is no final result. |
 
-退出码：`0` 表示流程完成（`completed`、`no_findings`、`draft_only`）；`2` 表示运行失败或降级（`probe_failed`、`review_failed`、`model_failed`、输入或环境错误）；`130` 表示用户取消。详细 schema 见 [docs/REVIEW.md](docs/REVIEW.md)。
+Exit codes: `0` means the flow completed (`completed`, `no_findings`, `draft_only`); `2` means a failed or degraded run (`probe_failed`, `review_failed`, `model_failed`, input or environment errors); `130` means the user cancelled. See [docs/REVIEW.md](docs/REVIEW.md) for the detailed schema.
 
-`no_findings` 不等于任务正确，`supported` 也不等于已被证明。review 是审阅工具，不是正确性证明。
+`no_findings` does not mean the task is correct, and `supported` does not mean proven. Review is an inspection tool, not a correctness proof.
 
-## verify：Python 函数的可执行证据
+## verify: executable evidence for Python functions
 
-`verify` 面向代码任务：针对一个 Python 函数，独立提出具体反例、盲审预期值、在 bubblewrap 沙箱中隔离执行，只有在观察到失败后才修正一次。
+`verify` targets code tasks: for a single Python function it independently proposes concrete counterexamples, blind-reviews the expected values, runs them in an isolated bubblewrap sandbox, and only repairs the draft once a failure has been observed.
 
-需要 Python 3.10+、Linux、`/usr/bin/python3`、bubblewrap 和允许用户命名空间隔离的内核配置，以及 `DEEPSEEK_API_KEY`。沙箱不可用时会停止，不会降级到宿主机执行。
+It requires Python 3.10+, Linux, `/usr/bin/python3`, bubblewrap, a kernel configuration that allows user-namespace isolation, and `DEEPSEEK_API_KEY`. If the sandbox is unavailable, it stops instead of falling back to running on the host.
 
 ```bash
 venv/bin/dualpath verify \
-  "实现 abs_value(x)，x 是整数。返回整数的绝对值。" \
+  "Implement abs_value(x) where x is an integer. Return the absolute value." \
   --function abs_value --budget 0.30 --output verify-runs/example
 ```
 
-输出目录必须是新目录，以免覆盖旧结果。`result.json` 记录全部状态、反例和执行观察，`solution.py` 是最终保留的代码，`ledger.json` 记录请求、token 与保守费用。退出码：通过已接纳检查为 `0`；验证未完成、没有可用检查、修正未通过或启动失败为 `2`；取消为 `130`。不自动重试网络请求，费用按输出目录独立记账。
+The output directory must be new so old results are never overwritten. `result.json` records every status, counterexample and execution observation; `solution.py` is the code that was finally kept; `ledger.json` records requests, tokens and the conservative cost estimate. Exit codes: `0` when all accepted checks pass; `2` when verification is incomplete, there is no usable check, the repair does not pass, or startup fails; `130` when cancelled. Network requests are not retried automatically, and the budget is tracked per output directory.
 
-完整的流程、预算细节、`--interaction-focus` 实验选项和边界见 [docs/VERIFIED.md](docs/VERIFIED.md)。
+See [docs/VERIFIED.md](docs/VERIFIED.md) for the full flow, budget details, the experimental `--interaction-focus` option and the limits.
 
-## 实验结论
+## Experimental results
 
-两轮实验都是自建小样本，每题只运行一次，不能据此宣称一般性优越性，也不支持显著性结论。
+Both experiments are small, self-built samples with a single run per task. They neither support claims of general superiority nor yield significance.
 
-| 实验 | 直接作答 | 普通自检 | 改进方法 |
+| Experiment | Direct answer | Ordinary self-check | Improved method |
 | --- | ---: | ---: | ---: |
-| 第一轮：30 道 Python 函数题 | 26/30 | 五轮自审 28/30 | 原 DualPath 28/30 |
-| 第二轮：8 道 Python 函数题 | 7/8 | 一轮自检 8/8 | 验证模式 7/8 |
+| Round 1: 30 Python function tasks | 26/30 | 5-round self-review: 28/30 | original DualPath: 28/30 |
+| Round 2: 8 Python function tasks | 7/8 | 1-round self-check: 8/8 | verification mode: 7/8 |
 
-第一轮中，五轮自审与原 DualPath 每一道题的通过/失败完全一致，DualPath 的估算费用高约 22%，没有观察到独有收益。第二轮中，一轮自检 8/8；三轮自检在有结果的 6 题上 6/6（两题因接口/截断缺失），不能与其他方法的 8 题分母直接比较；验证模式 7/8，漏掉的 V008 被一轮自检修好。两轮都没有「DualPath 或验证模式优于普通自检」的证据。
+In round 1, the 5-round self-review and the original DualPath passed exactly the same tasks; DualPath's estimated cost was about 22% higher, and no unique benefit was observed. In round 2, the 1-round self-check passed 8/8; the 3-round self-check passed 6/6 on the six tasks that had results (two were missing due to API errors/truncation), which cannot be compared directly against the 8-task denominator; the verification mode passed 7/8, and the one it missed (V008) was fixed by the 1-round self-check. Neither round provides evidence that DualPath or the verification mode beats an ordinary self-check.
 
-两轮累计保守记账 4.74333148 元，包含未知失败请求的预留，是本地估算，不是供应商账单。原始记录、冻结协议、离线复现和逐题分析见 [reports/README.md](reports/README.md)。
+The cumulative conservative ledger across both rounds is CNY 4.74333148, including reservations for failed requests. That is a local estimate, not a provider bill. Raw records, frozen protocols, offline reproduction and per-task analysis are in [reports/README.md](reports/README.md).
 
-## Legacy：已弃用的 run 模式
+## Legacy: the deprecated run mode
 
-`dualpath run` 是 v0.1 的双线路执行模式：线路一直接解决，线路二探索错误路线，问题按模型估计的概率分级，最后共同汇聚。v0.2 保留其行为以兼容旧脚本，但启动时会向 stderr 打印弃用警告，并计划在 v0.3 移除。
+`dualpath run` is the v0.1 dual-path execution mode: line one solves the task directly, line two explores error paths, problems are graded by model-estimated probability, and the two lines converge on a final result. v0.2 keeps its behavior for compatibility, but prints a deprecation warning to stderr at startup and plans to remove it in v0.3.
 
 ```bash
-# 仍然可用，但不建议用于新工作
-venv/bin/dualpath run "你的任务"
+# Still works, but not recommended for new work
+venv/bin/dualpath run "your task"
 ```
 
-| 旧用法 | v0.2 迁移建议 |
+| Old usage | Migration in v0.2 |
 | --- | --- |
-| `dualpath run "通用任务"` | `dualpath review "通用任务"` |
-| `run --max-problems 5` | `review --max-findings 5`（语义不同：不再有概率或等级） |
+| `dualpath run "general task"` | `dualpath review "general task"` |
+| `run --max-problems 5` | `review --max-findings 5` (different semantics: no probabilities or levels) |
 | `run --json/--markdown` | `review --json/--markdown` |
-| `run` 的按概率分级展示 | 不再提供；review 只按审阅状态组织 finding |
-| `run --search-results`、`run --no-search` | 不再提供；review 不联网检索，证据来自任务与 `--context` |
-| 代码函数任务 | `dualpath verify "函数规范" --function NAME ...` |
+| probability-graded display in `run` | no longer provided; review groups findings by review status only |
+| `run --search-results`, `run --no-search` | no longer provided; review does not search the web, evidence comes from the task and `--context` |
+| code/function tasks | `dualpath verify "function spec" --function NAME ...` |
 
-`run` 的旧输出字段保持兼容；v0.2 额外记录 `status`（`completed` 或 `degraded`）和 `failures`，用于说明哪些阶段降级，不再把失败伪装成成功。
+The old output fields of `run` remain compatible; v0.2 additionally records `status` (`completed` or `degraded`) and `failures`, so degraded runs are no longer presented as successes.
 
-## 配置
+## Configuration
 
-| 变量 | 说明 |
+| Variable | Description |
 | --- | --- |
-| `DEEPSEEK_API_KEY` | DeepSeek API Key |
-| `DEEPSEEK_MODEL` | DeepSeek 模型名称，默认 `deepseek-flash` |
-| `DEEPSEEK_BASE_URL` | 覆盖 DeepSeek 接口地址 |
-| `DUALPATH_PROVIDER` | 默认提供方，默认 `deepseek` |
-| `DUALPATH_API_KEY` / `OPENAI_API_KEY` | OpenAI 兼容接口的 Key |
-| `DUALPATH_BASE_URL` / `OPENAI_BASE_URL` | OpenAI 兼容接口地址 |
-| `DUALPATH_MODEL` / `OPENAI_MODEL` | 模型名称；`DUALPATH_MODEL` 对两种提供方都生效，优先级高于 `DEEPSEEK_MODEL` |
+| `DEEPSEEK_API_KEY` | DeepSeek API key. |
+| `DEEPSEEK_MODEL` | DeepSeek model name, default `deepseek-flash`. |
+| `DEEPSEEK_BASE_URL` | Override the DeepSeek endpoint. |
+| `DUALPATH_PROVIDER` | Default provider, default `deepseek`. |
+| `DUALPATH_API_KEY` / `OPENAI_API_KEY` | Key for OpenAI-compatible endpoints. |
+| `DUALPATH_BASE_URL` / `OPENAI_BASE_URL` | OpenAI-compatible endpoint URL. |
+| `DUALPATH_MODEL` / `OPENAI_MODEL` | Model name; `DUALPATH_MODEL` applies to both providers and takes precedence over `DEEPSEEK_MODEL`. |
 
-`.env` 自动加载只补缺失项：shell 里已经设置的变量优先。模型名称与价格以 [DeepSeek 官方 API 文档](https://api-docs.deepseek.com/) 为准。
+`.env` loading only fills missing variables: anything already set in the shell wins. Model names and prices follow the [official DeepSeek API documentation](https://api-docs.deepseek.com/).
 
-## 开发
+## Development
 
 ```bash
 venv/bin/python -m pip install -e ".[dev]"
 venv/bin/pytest -q
 venv/bin/ruff check .
-venv/bin/python examples/verify_offline.py   # 零 API 调用的离线演示，需要 bubblewrap
+venv/bin/python examples/verify_offline.py   # offline demo, no API calls; requires bubblewrap
 ```
 
-贡献约束见 [CONTRIBUTING.md](CONTRIBUTING.md)：证据优先、不把模型判断写成正确性证明、不做概率宣传、测试与文档同步。
+Contribution rules are in [CONTRIBUTING.md](CONTRIBUTING.md): evidence first, never present a model judgement as a correctness proof, no probability marketing, and keep tests and docs in sync.
 
-## 局限
+## Limitations
 
-- 两轮实验都是自建题，不是公开基准，也没有独立第三方出题；
-- 只测试了单一模型、单次采样；没有跨模型、多次重复或显著性证据；
-- review 的 finding 覆盖范围受模型发现能力限制；`rule_quote` 只保证引文出现在材料中，不保证规则本身正确或完整；
-- verify 只覆盖有限反例和指定异常，通过检查不等于整体正确；
-- 闭环（草稿 → 失败发现 → 审阅 → 修正）能整理和暴露问题，但不会凭空引入任务之外的事实；
-- 运行记录会保存任务原文和模型输出，可能包含敏感信息，请按私密材料管理。
+- Both experiments use self-built tasks, not a public benchmark, and no independent third party wrote the tasks.
+- Only a single model and a single sample were tested; there is no cross-model, repeated-run or significance evidence.
+- The coverage of `review` findings is bounded by the model's ability to discover failures; `rule_quote` only guarantees that the quote appears in the material, not that the rule itself is correct or complete.
+- `verify` only covers finite counterexamples and the listed exception types; passing the checks does not mean the implementation is correct overall.
+- The closed loop (draft -> failure probe -> review -> repair) can organize and expose problems, but it cannot introduce facts that are not in the task.
+- Run records contain the original task text and model output, which may be sensitive; treat them as private material.
 
-## 仓库结构
+## Repository layout
 
 ```text
 src/dualpath/
-├── cli.py            # 命令行入口
-├── review.py         # review：草稿、失败发现、审阅、修正
-├── verification.py   # verify：反例、盲审、隔离执行、修正
-├── sandbox.py        # bubblewrap 隔离执行
-├── budgeted.py       # 预算账本与费用保护
-├── orchestrator.py   # legacy run 的双线路编排
-├── paths.py          # legacy run 的直接线路与错误线路
-├── models.py         # 数据模型
-├── prompts.py        # 各阶段提示词
-├── llm.py            # 模型接口、超时与 JSON 解析
-├── reporting.py      # 控制台输出
-└── search.py         # legacy run 的检索接口
-docs/                 # REVIEW / DESIGN / VERIFIED 说明
-reports/              # 两轮实验结论与索引
-experiments/          # 冻结的题目、协议与分析脚本
-tests/                # 单元与隔离执行测试
-examples/             # 离线演示
-artifacts/            # 历史归档与校验清单
+├── cli.py            # command-line entry point
+├── review.py         # review: draft, failure probe, review, repair
+├── verification.py   # verify: counterexamples, blind review, isolated execution, repair
+├── sandbox.py        # bubblewrap isolation
+├── budgeted.py       # budget ledger and cost protection
+├── orchestrator.py   # legacy run dual-path orchestration
+├── paths.py          # legacy run direct path and error path
+├── models.py         # data models
+├── prompts.py        # stage prompts
+├── llm.py            # model interface, timeouts, JSON parsing
+├── reporting.py      # console output
+└── search.py         # legacy run search interface
+docs/                 # REVIEW / DESIGN / VERIFIED docs (Chinese)
+reports/              # experiment conclusions and index (Chinese)
+experiments/          # frozen tasks, protocols and analysis scripts
+tests/                # unit and isolated-execution tests
+examples/             # offline demos
+artifacts/            # historical archives and checksums
 ```
 
-## 许可
+## License
 
-MIT License。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
+MIT License. For security issues, please report privately as described in [SECURITY.md](SECURITY.md).
