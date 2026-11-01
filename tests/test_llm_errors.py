@@ -106,6 +106,26 @@ async def test_openai_compatible_model_maps_timeout_error() -> None:
         await model.complete("system", "user")
 
 
+@pytest.mark.parametrize("finish_reason", ["length", "content_filter", "tool_calls"])
+async def test_incomplete_response_is_rejected_even_with_valid_text(finish_reason) -> None:
+    async def handler(payload):
+        response = _response('{"findings": []}')
+        response.choices[0].finish_reason = finish_reason
+        return response
+
+    with pytest.raises(ModelResponseError, match="未完整结束"):
+        await _make_model(handler).complete("system", "user")
+
+
+@pytest.mark.parametrize("content", ["", " \n\t"])
+async def test_empty_response_is_rejected(content) -> None:
+    async def handler(payload):
+        return _response(content)
+
+    with pytest.raises(ModelResponseError, match="为空"):
+        await _make_model(handler).complete("system", "user")
+
+
 async def test_complete_json_falls_back_when_json_mode_is_rejected() -> None:
     class BadRequestError(Exception):
         pass

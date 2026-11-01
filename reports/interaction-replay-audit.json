@@ -1,0 +1,66 @@
+{
+  "batch": "interaction_pilot",
+  "network_calls": 0,
+  "all_checks_passed": true,
+  "frozen_source_sha256": "d0b390863d1a7c248c79c30ce607247208fe497ce9296b4c3e63dde3f04c1ae0",
+  "matched_requests": 56,
+  "matched_task_results": 8,
+  "matched_accounting": true,
+  "matched_analysis": true,
+  "reference_tasks_passed": 8,
+  "hidden_test_mutants_rejected": 13,
+  "mutants_caught": {
+    "verified_default": {
+      "caught": 4,
+      "total": 13
+    },
+    "verified_interaction": {
+      "caught": 9,
+      "total": 13
+    }
+  },
+  "conservative_cny": 0.192743,
+  "validation": [
+    {
+      "id": "I001",
+      "reference_passed": true,
+      "mutants_rejected": 2
+    },
+    {
+      "id": "I002",
+      "reference_passed": true,
+      "mutants_rejected": 2
+    },
+    {
+      "id": "I003",
+      "reference_passed": true,
+      "mutants_rejected": 2
+    },
+    {
+      "id": "I004",
+      "reference_passed": true,
+      "mutants_rejected": 1
+    },
+    {
+      "id": "I005",
+      "reference_passed": true,
+      "mutants_rejected": 2
+    },
+    {
+      "id": "I006",
+      "reference_passed": true,
+      "mutants_rejected": 2
+    },
+    {
+      "id": "I007",
+      "reference_passed": true,
+      "mutants_rejected": 1
+    },
+    {
+      "id": "I008",
+      "reference_passed": true,
+      "mutants_rejected": 1
+    }
+  ],
+  "limits": "仅复现历史请求、响应驱动的流程和评分，不代表新模型采样或修复收益。"
+}

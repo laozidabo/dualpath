@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from dualpath.llm import LanguageModel, ModelResponseError
+from dualpath.llm import LanguageModel, ModelError, ModelRequestRejected, ModelResponseError, ModelTimeout
 from dualpath.models import Finding, ReviewResult
 from dualpath.review import ReviewEngine
 
@@ -227,6 +227,57 @@ async def test_quote_from_context_file_sets_rule_source() -> None:
 
     assert result.status == "completed"
     assert result.findings[0].rule_source == "spec.md"
+
+
+async def test_all_stages_receive_full_context_without_leaking_draft_to_blind_stages() -> None:
+    context = {"spec.md": f"{QUOTE}。例外：离线提交允许排队。", "notes.md": "保留已有数据。"}
+    model = FakeReviewModel(probe=findings_payload(make_finding()))
+    result = await ReviewEngine(model).run("依照附件规范实施。", context=context)
+    assert result.status == "completed"
+    for stage, text in zip(model.calls, model.user_prompts, strict=True):
+        payload = json.loads(text)
+        assert payload["context"] == context
+        if stage in {"probe", "decisions"}:
+            assert "draft" not in payload
+            assert model.draft not in text
+
+
+@pytest.mark.parametrize("stage", ["draft", "final"])
+async def test_empty_deliverable_is_not_reported_as_completed(stage) -> None:
+    model = FakeReviewModel(probe=findings_payload(make_finding()), **{stage: " \n "})
+    result = await ReviewEngine(model).run(TASK)
+    assert result.status == ("model_failed" if stage == "draft" else "review_failed")
+    assert result.final_output == ("" if stage == "draft" else model.draft)
+    if stage == "draft":
+        assert model.stage_counts["decisions"] == 0
+
+
+@pytest.mark.parametrize("stage", ["decisions", "final"])
+@pytest.mark.parametrize("error_type", [ModelError, ModelTimeout, ModelRequestRejected])
+async def test_upstream_failures_preserve_draft(stage, error_type) -> None:
+    model = FakeReviewModel(
+        probe=findings_payload(make_finding()), errors={stage: [error_type("接口不可用")]},
+    )
+    result = await ReviewEngine(model).run(TASK)
+    assert result.status == "review_failed"
+    assert result.final_output == model.draft
+    assert model.stage_counts[stage] == 1
+
+
+@pytest.mark.parametrize("value", [[], {}, None, 3])
+async def test_wrong_enum_types_follow_protocol_failure_paths(value) -> None:
+    model = FakeReviewModel(probe=[
+        findings_payload(make_finding(check_kind=value)), findings_payload(make_finding()),
+    ])
+    result = await ReviewEngine(model).run(TASK)
+    assert result.status == "completed"
+    assert model.stage_counts["probe"] == 2
+    model = FakeReviewModel(
+        probe=findings_payload(make_finding()), decisions=decisions_payload(make_decision(verdict=value)),
+    )
+    result = await ReviewEngine(model).run(TASK)
+    assert result.status == "review_failed"
+    assert result.final_output == model.draft
 
 
 def test_max_findings_out_of_range_raises_value_error() -> None:

@@ -67,6 +67,7 @@ FINAL_MERGE = """
 REVIEW_DRAFT = """
 [REVIEW_DRAFT]
 你是 DualPath 的草稿线路。直接完成用户任务，给出完整、可直接使用的结果。
+同时阅读 task 与 context 中的完整资料，遵守其中明确的规则和例外。
 不要在这里枚举风险或输出审阅过程。
 """.strip()
 
@@ -87,6 +88,7 @@ REVIEW_PROBE = """
 REVIEW_DECISIONS = """
 [REVIEW_DECISIONS]
 你是独立审阅者。你看不到草稿，只判断每条失败模式是否有任务或资料原文支持，以及检查项是否具体、可执行。
+结合 task 与 context 中的完整资料核对引文上下文、例外和优先级，不可只依据 finding 内摘录的规则。
 逐条给出 verdict：accept（原文支持且检查项可执行）、reject（原文不支持或检查项不可用）、ambiguous（存在歧义）。
 只输出 JSON 对象，不要输出 Markdown：
 {"decisions":[{"id":"F1","verdict":"accept","reason":"简短理由"}]}
@@ -96,6 +98,7 @@ REVIEW_DECISIONS = """
 REVIEW_FINAL = """
 [REVIEW_FINAL]
 你是 DualPath 的修正线路。草稿已经生成；下面给出经独立审阅支持的失败模式。
-只根据这些失败模式修正草稿，不要引入新的需求或事实；如果某条建议与任务原文冲突，以任务原文为准。
+结合 task 与 context 中的完整资料，只根据这些失败模式修正草稿，不要引入新的需求或事实；
+如果某条建议与原文规则或例外冲突，以原文为准，保留其他已满足的要求。
 输出完整的最终结果，不要展示内部过程。
 """.strip()

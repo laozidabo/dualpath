@@ -11,6 +11,7 @@ from typing import Any
 from .llm import (
     JsonProtocolError,
     LanguageModel,
+    ModelError,
     ModelResponseError,
     parse_strict_json,
 )
@@ -114,7 +115,7 @@ def parse_findings(text: str, *, max_findings: int, corpus: list[tuple[str, str]
             raise ReviewFormatError("失败模式 id 必须唯一且形如 F1")
         seen.add(finding_id)
         check_kind = row["check_kind"]
-        if check_kind not in CHECK_KINDS:
+        if not isinstance(check_kind, str) or check_kind not in CHECK_KINDS:
             raise ReviewFormatError("check_kind 只能是 executable 或 manual")
         quote = _require_text(row["rule_quote"], "rule_quote", limit=500)
         source = _locate_quote(quote, corpus)
@@ -150,7 +151,7 @@ def parse_decisions(text: str, findings: list[Finding]) -> dict[str, tuple[str, 
         if finding_id in decisions:
             raise ReviewFormatError("审阅中的 id 重复")
         verdict = row["verdict"]
-        if verdict not in _DECISION_TO_STATUS:
+        if not isinstance(verdict, str) or verdict not in _DECISION_TO_STATUS:
             raise ReviewFormatError("verdict 只能是 accept/reject/ambiguous")
         decisions[finding_id] = (verdict, _require_text(row["reason"], "reason"))
     if set(decisions) != expected:
@@ -187,11 +188,13 @@ class ReviewEngine:
             nonlocal calls
             calls += 1
             answer = await self.model.complete(system, user)
-            if not isinstance(answer, str):
-                raise ModelResponseError("模型响应正文不是文本")
+            if not isinstance(answer, str) or not answer.strip():
+                raise ModelResponseError("模型响应正文为空或不是文本")
             return answer
 
-        draft_future = asyncio.ensure_future(ask(REVIEW_DRAFT, json.dumps({"task": task}, ensure_ascii=False)))
+        draft_future = asyncio.ensure_future(
+            ask(REVIEW_DRAFT, json.dumps({"task": task, "context": context}, ensure_ascii=False))
+        )
         probe_future = asyncio.ensure_future(self._probe(ask, task, context))
         draft_raw, probe_raw = await asyncio.gather(draft_future, probe_future, return_exceptions=True)
 
@@ -212,8 +215,8 @@ class ReviewEngine:
         self.reporter.findings_ready(findings)
 
         try:
-            decisions = await self._decide(ask, task, findings)
-        except (ReviewFormatError, ModelResponseError):
+            decisions = await self._decide(ask, task, context, findings)
+        except (ReviewFormatError, ModelError):
             return self._finish(task, draft, findings, draft, "review_failed", calls, started_at)
         for finding in findings:
             verdict, reason = decisions[finding.id]
@@ -230,13 +233,14 @@ class ReviewEngine:
                 json.dumps(
                     {
                         "task": task,
+                        "context": context,
                         "draft": draft,
                         "supported_findings": [finding.to_dict() for finding in supported],
                     },
                     ensure_ascii=False,
                 ),
             )
-        except (ModelResponseError, JsonProtocolError):
+        except (ModelError, JsonProtocolError):
             return self._finish(task, draft, findings, draft, "review_failed", calls, started_at)
         final = final.strip() or draft
         return self._finish(task, draft, findings, final, "completed", calls, started_at)
@@ -260,9 +264,11 @@ class ReviewEngine:
                 last_error = error
         raise ModelResponseError(f"失败发现结构无效：{last_error}")
 
-    async def _decide(self, ask: Ask, task: str, findings: list[Finding]) -> dict[str, tuple[str, str]]:
+    async def _decide(
+        self, ask: Ask, task: str, context: dict[str, str], findings: list[Finding],
+    ) -> dict[str, tuple[str, str]]:
         payload = json.dumps(
-            {"task": task, "findings": [finding.to_dict() for finding in findings]},
+            {"task": task, "context": context, "findings": [finding.to_dict() for finding in findings]},
             ensure_ascii=False,
         )
         text = await ask(REVIEW_DECISIONS, payload)

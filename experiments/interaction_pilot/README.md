@@ -11,7 +11,7 @@
 ## 设计
 
 - **8 道新题（I001–I008）**：整数比例分配、语义化版本比较、通配符匹配、时长解析、稳定去重、整数令牌桶、配置解析、连续区间合并。题目强调多条规则同时起作用时的边界与优先级。
-- 每题含参考实现、隐藏测试与 1 个单规则变异体；离线校验要求参考实现通过全部隐藏测试、变异体至少被一条隐藏测试抓住（`validate.py`）。
+- 每题含参考实现、隐藏测试与 1–2 个单规则变异体（共 13 个）；离线校验要求参考实现通过全部隐藏测试、变异体至少被一条隐藏测试抓住（`validate.py`）。
 - **4 个对照臂**，共享同一份初稿：
   - `direct`：初稿本身；
   - `self_1`：一次「反馈 → 重写」；
@@ -28,25 +28,23 @@
 - 预设变异检出：默认发现 4/13，规则交互发现 9/13；调用次数与案例数相同（各 16 次、24 个案例），保守费用只差约 0.0035 元；
 - 两臂均为 24/24 案例被参考实现认可、0 错误预期、0 退步；逐题差异与局限见 [结果报告](../../reports/interaction-pilot-results.md)。
 
-## 运行
+## 离线复放
 
-需要 Linux、bubblewrap、可用的用户命名空间，以及有效的 `DEEPSEEK_API_KEY`。密钥可以放在仓库根目录的 `.env`（已被 `.gitignore` 忽略），程序启动时读取；不会覆盖 shell 中已有变量，也不会把密钥写入结果目录。
+需要 Linux、bubblewrap、可用的用户命名空间和已安装的项目开发依赖，无需 API 密钥：
 
 ```bash
-# 1. 离线校验并冻结；冻结后 run.py 会拒绝任何代码/题库/协议变化
-venv/bin/python experiments/interaction_pilot/validate.py
-
-# 2. 零费用演练（脚本化响应，只验证管线，不产生实验数据）
-venv/bin/python experiments/interaction_pilot/run.py --scripted --output /tmp/interaction-scripted
-
-# 3. 真实运行（花费计入本地保守账本）
-venv/bin/python experiments/interaction_pilot/run.py --output verify-runs/interaction-pilot
-
-# 4. 离线汇总（不调用模型）
-venv/bin/python experiments/interaction_pilot/analyze.py --output verify-runs/interaction-pilot
+venv/bin/python experiments/interaction_pilot/replay_frozen.py
+# 可选：把审计写入一个不存在的新文件
+venv/bin/python experiments/interaction_pilot/replay_frozen.py --report /tmp/interaction-audit.json
 ```
 
-输出目录必须是新目录。`results/` 保存逐题记录，`ledger.json` 保存请求与费用，`summary.json` 保存逐题评分与案例审计，`analysis.json` / `analysis.md` 是离线汇总。
+复放器校验归档与冻结文件的 SHA-256，在临时目录恢复第三批源码，逐项匹配历史请求并消费记录中的模型响应，重跑隐藏测试、变异检查、费用记账与汇总。原始记录保持不变；这不是新模型效果实验。结果见 [离线审计](../../reports/interaction-replay-audit.json)。
+
+## 历史运行与后续批次
+
+`validate.py`、`run.py`、`analyze.py` 是第三批冻结入口。当前项目源码已演进，直接运行旧 `run.py` 会因散列变化拒绝执行，这是预期保护；不要重新运行 `validate.py` 覆盖本批冻结文件来绕过保护。
+
+新的付费实验应另建批次目录、题库与冻结协议，使用新的输出目录，并遵守剩余授权预算。`results/` 保存逐题记录，`ledger.json` 保存请求与费用，`summary.json` 保存评分与案例审计，`analysis.json` / `analysis.md` 是离线汇总。
 
 ## 指标
 

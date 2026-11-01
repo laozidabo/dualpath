@@ -50,6 +50,8 @@ venv/bin/dualpath review "Write an error-handling spec for the following API: ..
 
 A review run goes through four steps:
 
+All four stages receive the full task and `--context` material. The probe and blind review never receive the draft; the reviewer can check quoted rules against surrounding exceptions and precedence rules.
+
 1. The draft line completes the task directly.
 2. The failure-probe line reads only the task and the material passed via `--context`, and proposes at most `--max-findings` concrete failure modes.
 3. An independent review line decides whether each failure mode is supported by the source text and whether its check is usable, and returns `supported`, `ambiguous` or `rejected`.
@@ -91,6 +93,8 @@ Run statuses:
 | `model_failed` | Even the draft stage was unavailable; there is no final result. |
 
 Exit codes: `0` means the flow completed (`completed`, `no_findings`, `draft_only`); `2` means a failed or degraded run (`probe_failed`, `review_failed`, `model_failed`, input or environment errors); `130` means the user cancelled. See [docs/REVIEW.md](docs/REVIEW.md) for the detailed schema.
+
+Empty deliverables and explicitly truncated or filtered API responses are failures. A review or repair API error preserves the draft with `review_failed`; a failed draft produces `model_failed`. Providers without an end-of-response marker cannot offer truncation detection.
 
 `no_findings` does not mean the task is correct, and `supported` does not mean proven. Review is an inspection tool, not a correctness proof.
 

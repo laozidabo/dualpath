@@ -105,11 +105,15 @@ class OpenAICompatibleModel(LanguageModel):
         except Exception as error:  # noqa: BLE001 - 统一映射为带类型的模型错误
             raise _map_model_error(error) from None
         try:
-            content = response.choices[0].message.content
+            choice = response.choices[0]
+            content = choice.message.content
         except (AttributeError, IndexError, TypeError) as error:
             raise ModelResponseError("模型响应缺少正文") from error
-        if not isinstance(content, str):
-            raise ModelResponseError("模型响应正文不是文本")
+        # 兼容没有结束标记的旧接口；明确的截断、过滤或工具调用不得当作交付结果。
+        if getattr(choice, "finish_reason", None) not in {None, "stop"}:
+            raise ModelResponseError("模型响应未完整结束")
+        if not isinstance(content, str) or not content.strip():
+            raise ModelResponseError("模型响应正文为空或不是文本")
         return content
 
 

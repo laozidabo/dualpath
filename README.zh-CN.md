@@ -47,6 +47,8 @@ venv/bin/dualpath review "为下面的接口写一份错误处理规范：……
 
 一次 review 的执行过程：
 
+四个阶段均接收完整任务与 `--context` 资料。失败发现和盲审看不到草稿；盲审能结合原文中的例外和优先级核对摘录，而不只依赖 finding 的引文。
+
 1. 草稿线路直接完成用户任务；
 2. 失败发现线路只阅读任务和 `--context` 提供的资料，提出最多 `--max-findings` 条具体失败模式；
 3. 独立审阅线路判断每条失败模式是否有原文支持、检查项是否可用，给出 `supported`、`ambiguous` 或 `rejected`；
@@ -90,6 +92,8 @@ venv/bin/dualpath review "为下面的接口写一份错误处理规范：……
 退出码：`0` 表示流程完成（`completed`、`no_findings`、`draft_only`）；`2` 表示运行失败或降级（`probe_failed`、`review_failed`、`model_failed`、输入或环境错误）；`130` 表示用户取消。详细 schema 见 [docs/REVIEW.md](docs/REVIEW.md)。
 
 `no_findings` 不等于任务正确，`supported` 也不等于已被证明。review 是审阅工具，不是正确性证明。
+
+空白交付结果、接口明确标记为截断或过滤的回复均视为失败。审阅或修正接口失败时保留草稿并返回 `review_failed`；草稿不可用时返回 `model_failed`。未提供结束标记的兼容接口无法检测截断。
 
 ## verify：Python 函数的可执行证据
 
